@@ -12,6 +12,8 @@ from typing import Set
 
 
 ROOT = Path(__file__).resolve().parents[1]
+TEXT_SUFFIXES = {".bib", ".cff", ".csv", ".json", ".md", ".py", ".tex", ".txt", ".yml", ".yaml"}
+TEXT_NAMES = {".gitattributes", ".gitignore", "requirements.txt"}
 
 
 def fail(message: str) -> None:
@@ -29,10 +31,11 @@ def column_values(path: Path, column: str) -> Set[str]:
 
 
 def sha256(path: Path) -> str:
+    data = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES or path.name in TEXT_NAMES:
+        data = data.replace(b"\r\n", b"\n")
     digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
+    digest.update(data)
     return digest.hexdigest()
 
 

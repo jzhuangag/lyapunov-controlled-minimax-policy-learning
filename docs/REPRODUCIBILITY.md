@@ -115,4 +115,4 @@ The runner records commands and timing in `run_manifest.json`. It fails if its o
 
 ## Determinism and PDF hashes
 
-The locked CSV/JSON files and manuscript PDFs have exact hashes in `SHA256SUMS`. A fresh numerical run can differ in wall-clock fields and may exhibit platform-level floating-point variation. Matplotlib and pdfTeX also embed creation metadata, so regenerated PDF bytes need not match even when the rendered scientific content does.
+The locked CSV/JSON files and manuscript PDFs have hashes in `SHA256SUMS`. Text files use canonical LF line endings so the check is stable on Windows and Linux; binary files use their exact bytes. A fresh numerical run can differ in wall-clock fields and may exhibit platform-level floating-point variation. Matplotlib and pdfTeX also embed creation metadata, so regenerated PDF bytes need not match even when the rendered scientific content does.
