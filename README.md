@@ -48,7 +48,7 @@ Run the complete fixed-seed experiment suite in a new output directory:
 python scripts/reproduce.py full
 ```
 
-The full CPU suite takes roughly 20–30 minutes on the development machine. It never overwrites the committed results. See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the exact seeds, budgets, outputs, and interpretation of the locked artifacts.
+The full CPU suite never overwrites the committed results. Runtime depends strongly on the processor and concurrent load. See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the exact seeds, budgets, outputs, and interpretation of the locked artifacts.
 
 ## Figure provenance
 
