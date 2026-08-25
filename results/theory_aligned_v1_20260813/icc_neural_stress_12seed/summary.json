@@ -1,0 +1,181 @@
+{
+  "date": "2026-08-07",
+  "device": "CPU",
+  "training_mode": "independent retraining at every communication operating point",
+  "simultaneous_joint_updates": true,
+  "warmup": "none",
+  "channels": 6,
+  "states": 36,
+  "hidden_width": 32,
+  "parameters_per_player": 614,
+  "seeds": [
+    500,
+    501,
+    502,
+    503,
+    504,
+    505,
+    506,
+    507,
+    508,
+    509,
+    510,
+    511
+  ],
+  "seed_selection": "prespecified before execution; no outcome-based filtering",
+  "steps": 25,
+  "methods": [
+    "QP+G",
+    "noG",
+    "PPM-3"
+  ],
+  "fixed_step_size": 0.01,
+  "configurations": [
+    {
+      "name": "Jammer-12",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 12.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Jammer-16",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 16.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Jammer-20",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Jammer-24",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 24.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Switch-0.02",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.02,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Switch-0.06",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.06,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Switch-0.10",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Switch-0.14",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.14,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Leakage-0.20",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.2
+    },
+    {
+      "name": "Leakage-0.40",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.4
+    },
+    {
+      "name": "Leakage-0.60",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.6
+    },
+    {
+      "name": "Leakage-0.80",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Persistence-0.40",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.4,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Persistence-0.55",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.55,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Persistence-0.70",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.7,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    },
+    {
+      "name": "Persistence-0.85",
+      "channels": 6,
+      "hidden_width": 32,
+      "jammer_to_noise": 20.0,
+      "rho_h": 0.85,
+      "switch_cost": 0.1,
+      "adjacent_leakage": 0.8
+    }
+  ],
+  "maximum_br_residual": 2.842170943040401e-14,
+  "elapsed_seconds": 459.76526045799255
+}

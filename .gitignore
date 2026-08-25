@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Reproduction outputs
+/outputs/
+/runs/
+/logs/
+*.log
+*.pid
+results/**/*partial.csv
+
+# LaTeX build products
+/build/
+/tmp/
+*.aux
+*.blg
+*.bbl
+*.fdb_latexmk
+*.fls
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.xdv
+*.dvi
+
+# Local caches and editors
+.mplconfig/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local secrets
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+credentials*
+secrets*

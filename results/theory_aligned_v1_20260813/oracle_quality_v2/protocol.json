@@ -1,0 +1,37 @@
+{
+  "status": "complete",
+  "training_seeds": [
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411
+  ],
+  "checkpoint_rule": "fixed joint updates 0, 15, and 30 on deterministic replay of locked QP+G runs",
+  "checkpoints": [
+    0,
+    15,
+    30
+  ],
+  "batch_trajectories": [
+    32,
+    64,
+    128,
+    256
+  ],
+  "horizon": 64,
+  "replicates_per_seed_checkpoint_batch": 4,
+  "evaluation_batch_seed_formula": "910000000 + training_seed*100003 + checkpoint*1009 + trajectories*17 + replicate",
+  "population_oracle": "exact finite-game autograd saddle field and exact JVP",
+  "sampled_oracle": "same-batch likelihood-ratio field and autograd JVP",
+  "outcome_based_selection": false,
+  "failed_runs": 0,
+  "raw_rows": 576
+}

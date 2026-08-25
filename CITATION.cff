@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the accompanying manuscript."
+title: "Lyapunov-Controlled Minimax Policy Learning for Adversarial Dynamic Spectrum Access"
+type: software
+authors:
+  - family-names: Zhuang
+    given-names: Jialin
+  - family-names: Lau
+    given-names: Vincent K. N.
+version: 1.0.0
+date-released: 2026-08-25
+repository-code: "https://github.com/jzhuangag/lyapunov-controlled-minimax-policy-learning"
+keywords:
+  - dynamic spectrum access
+  - minimax policy learning
+  - zero-sum Markov games
+  - Lyapunov drift
+  - adversarial reinforcement learning

@@ -1,0 +1,9 @@
+{
+  "python": "3.8.12 (default, Oct 12 2021, 03:01:40) [MSC v.1916 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "numpy": "1.20.3",
+  "scipy": "1.7.3",
+  "pandas": "1.4.1",
+  "torch": "1.11.0+cpu",
+  "matplotlib": "3.5.1"
+}

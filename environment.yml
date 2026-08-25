@@ -1,0 +1,12 @@
+name: lcmpl-icc2027
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.8.12
+  - numpy=1.20.3
+  - scipy=1.7.3
+  - pandas=1.4.1
+  - pytorch=1.11.0
+  - cpuonly
+  - matplotlib=3.5.1
