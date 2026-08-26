@@ -6,20 +6,17 @@
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage{xcolor}
-\setlength{\textfloatsep}{8pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{4pt plus 1pt minus 1pt}
 
 \newcommand{\bF}{\bm{F}}
 \newcommand{\bG}{\bm{G}}
 \newcommand{\bz}{\bm{z}}
 \newcommand{\btheta}{\bm{\theta}}
 \newcommand{\bpsi}{\bm{\psi}}
-\newcommand{\bq}{\bm{q}}
 \newcommand{\bu}{\bm{u}}
-\newcommand{\bD}{\bm{D}}
 \newcommand{\bd}{\bm{d}}
 \newcommand{\ba}{\bm{a}}
 \newcommand{\bb}{\bm{b}}
-\newcommand{\bs}{\bm{s}}
 \newcommand{\bH}{\bm{H}}
 \newcommand{\bA}{\bm{A}}
 \newcommand{\bS}{\bm{S}}
@@ -48,9 +45,9 @@ The Hong Kong University of Science and Technology, Hong Kong SAR, China}
 \begin{abstract}
 Adaptive jamming makes dynamic spectrum access (DSA) adversarial because the transmitter and jammer adapt their channel-selection policies.
 We model it as a zero-sum Markov game and propose Lyapunov-Controlled Minimax Policy Learning (LCMPL) with separate neural policies.
-LCMPL combines the simultaneous minimax policy-gradient field with a Jacobian--field correction, decouples their learning rates, and jointly regulates them using local game geometry and a communication-aware merit.
+LCMPL combines the simultaneous minimax policy-gradient field with a Jacobian--field correction, decouples their step sizes, and jointly regulates them using local game geometry and a communication-aware merit.
 A curvature identity identifies when the correction reduces the saddle-field energy that measures joint policy stationarity.
-Under local smoothness, biased-oracle moment bounds, and geometric coverage by the field and curvature directions, the time-averaged expected stationarity residual has an $O(1/K)$ transient plus an explicit residual term, where $K$ is the number of joint transmitter--jammer updates.
+Under local smoothness, biased-oracle moment bounds, and geometric coverage by the field and curvature directions, the time-averaged expected stationarity residual has an $O(1/K)$ transient plus a bounded residual term, where $K$ is the number of joint transmitter--jammer updates.
 Under a local policy-gap condition, a communication corollary converts this learning-stability result into a bound on the transmitter's worst-case spectral-efficiency loss.
 Across the nominal and trajectory-sampled benchmarks, LCMPL attains the highest final mean worst-case spectral-efficiency return among the compared methods.
 With sampled saddle fields, it improves the final rate over its field-only ablation by $0.0223$ bit/s/Hz, with a paired 95\% confidence interval of $[0.0138,0.0308]$.
@@ -68,11 +65,12 @@ The central problem is to stabilize joint policy adaptation without sacrificing 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.65\columnwidth]{figures/mathematical_motivation.pdf}
+\includegraphics[width=0.54\columnwidth]{figures/mathematical_motivation.pdf}
 \caption{Why saddle-field step sizes must adapt to local coupling.
-For a scaled bilinear local model, (a) the field action rotates around the stationary point, whereas (b) the Jacobian--field action points inward.
-Panel (c) maps the one-step residual factor $q$ over coupling $\omega$ and the field-to-curvature step-size ratio; the contraction region $q<1$ and its locally minimizing ratio vary with coupling.
-Panel (d) follows a switching coupling sequence; a fixed ratio crosses the $q=1$ boundary, whereas the local ratio remains contractive.}
+For the local update $\bz_+=\bz-\beta\bF_\omega(\bz)+\gamma\nabla\bF_\omega(\bz)\bF_\omega(\bz)$, $\omega$ denotes coupling strength, $\beta$ and $\gamma$ are the field and curvature step sizes, and $q=\|\bz_+\|/\|\bz\|$ is the one-step norm ratio.
+Panels (a) and (b) show the rotational field action and inward Jacobian--field action.
+Panel (c) shows that the contraction region $q<1$ and its locally minimizing curvature-to-field ratio $\gamma/\beta$ vary with $\omega$.
+Panel (d) follows switching coupling: a fixed ratio crosses $q=1$, whereas the local ratio remains contractive.}
 \label{fig:motivation}
 \end{figure}
 
@@ -88,28 +86,31 @@ Their local expansions include a Jacobian--field action but couple the effective
 Adaptive Mirror-Prox methods use observed operator geometry to tune extragradient updates across smoothness regimes \cite{Antonakopoulos2021AdaProx}, while double-step extragradient assigns distinct scales to the extrapolation and update stages \cite{Hsieh2020DSEG}.
 Our formulation instead treats the policy-gradient field and its Jacobian--field correction as separate search coordinates whose local coupling changes with the wireless state and neural policies.
 
-Motivated by adaptive learning-rate and Lyapunov-drift control \cite{Zhang2025AdaptivePolyak,Yuan2025StepSizeSDE}, we use the predicted one-step change of a communication-aware Lyapunov merit to coordinate geometric stabilization, worst-case-rate loss, and exploitability.
+Field-energy reduction alone does not ensure a useful communication policy.
+Motivated by adaptive learning-rate and Lyapunov-drift control \cite{Zhang2025AdaptivePolyak,Yuan2025StepSizeSDE}, we therefore use the predicted one-step change of a communication-aware Lyapunov merit to coordinate geometric stabilization, worst-case-rate loss, and exploitability.
 
 In this paper, we develop Lyapunov-Controlled Minimax Policy Learning (LCMPL) for adaptive anti-jamming DSA.
-LCMPL assigns separate rates to the joint policy-gradient field and its Jacobian--field correction by minimizing a local model of this change.
-A box-constrained quadratic model proposes both rates, and a same-state safeguard retains curvature only when it does not worsen realized merit or worst-case rate relative to the field-only candidate.
-We prove an $O(1/K)$ stationarity transient with an explicit residual and, under a local policy-gap condition, bound worst-case-rate loss; four regimes test the learning rules.
+LCMPL assigns separate step sizes to the joint policy-gradient field and its Jacobian--field correction by minimizing a local model of this change.
+A box-constrained quadratic model proposes both step sizes, and a same-state safeguard retains curvature only when it does not worsen realized merit or worst-case rate relative to the field-only candidate.
+We prove an $O(1/K)$ stationarity transient with an interpretable residual and, under a local policy-gap condition, bound worst-case-rate loss.
 
 \section{Adversarial DSA System and Markov-Game Model}
 \subsection{Multi-Channel Wireless Environment and Stage Utility}
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.78\columnwidth, trim=40 65 0 30, clip]{figures/system_model.pdf}
+\includegraphics[width=0.68\columnwidth, trim=40 65 0 30, clip]{figures/system_model.pdf}
 \caption{Adversarial wireless environment for anti-jamming dynamic spectrum access.}
 \label{fig:system}
 \end{figure}
 
-Fig.~\ref{fig:system} shows an incumbent network, a secondary link, and an adaptive jammer over $M$ licensed subchannels; $h_t\in\mathcal H=\{1,\ldots,L\}$ indexes one of $L$ compressed radio modes.
-Actions $a_t,b_t$ select channels from $\cA=\cB=\{0,\ldots,M-1\}$.
-Write the channel-indexed gain and interference profiles as $g_t=\{g_t(a)\}_{a\in\cA}$ and $I_t$, where $I_t$ contains incumbent interference $I_t^{\rm pri}(a)$ and jammer--receiver gains $g_t^J(b)$.
-In the general model, $g_t$ and $I_t$ may depend on $h_t$, and the observed state is $s_t=(h_t,g_t,I_t,a_{t-1})\in\cS$, where $a_{t-1}$ determines switching cost.
-In the reported specialization, $I_t$ is fixed by a normalized background and unit jammer--receiver gain, while $h_t$ indexes only $g(h_t)$.
-The distinct gain profile and one-hot $a_{t-1}$ give both neural policies a one-to-one encoding of the $LM$ compact states; both actions are selected simultaneously from $s_t$.
+Fig.~\ref{fig:system} shows an incumbent network, a secondary link, and an adaptive jammer over $M$ licensed subchannels.
+The discrete variable $h_t\in\mathcal H=\{1,\ldots,L\}$ labels the current channel-occupancy or radio mode.
+It is neither a selected channel nor a scalar gain; it indexes the complete channel-condition profile that applies at time $t$.
+Conditional on this mode, $g_t(a)$ is the secondary-link gain on channel $a$, while $I_t$ collects the incumbent-interference profile $I_t^{\rm pri}(a)$ and jammer--receiver gains $g_t^J(b)$.
+The transmitter and jammer simultaneously choose channels $a_t\in\cA$ and $b_t\in\cB$, where $\cA=\cB=\{0,\ldots,M-1\}$.
+The observed Markov state is $s_t=(h_t,g_t,I_t,a_{t-1})\in\cS$; the previous transmitter channel $a_{t-1}$ is included because changing channels incurs a switching cost.
+In the reported finite benchmark, the background interference and jammer--receiver gain are fixed, and each mode $h_t$ selects a distinct secondary-link gain vector $g(h_t)$.
+Consequently, $g(h_t)$ together with one-hot $a_{t-1}$ gives both neural policies a one-to-one encoding of the $LM$ compact states.
 
 The constants $P_{\rm s}$, $P_{\rm J}$, and $N_0$ denote secondary transmission power, jammer interference level, and receiver noise power, respectively.
 The factor $\ell(a,b)$ models co-channel, adjacent-channel, and nonadjacent leakage, and $c_{\rm sw}\geq0$ is the switching cost.
@@ -123,6 +124,7 @@ r_t
 \end{aligned}
 \label{eq:reward}
 \end{equation}
+Here, $\mathbf 1_{\{\cdot\}}$ is the indicator function.
 \subsection{Radio Dynamics and Minimax Policy Objective}
 The radio mode follows an action-independent correlated Markov chain with transition matrix $P_h$, and the compact benchmark transition is
 \[
@@ -130,33 +132,36 @@ P\big((h',a')\mid(h,a_{\rm prev}),a,b\big)
 =P_h(h'|h)\mathbf 1_{\{a'=a\}}.
 \]
 We use $P_h(h|h)=\rho_h$ and $P_h(h'|h)=(1-\rho_h)/(L-1)$ for $h'\ne h$, where $\rho_h$ controls temporal correlation.
-The reported finite benchmarks set $L=M$.
-The initial state is uniform over the $LM$ compact states.
+The reported benchmarks set $L=M$ and initialize uniformly over the $LM$ compact states.
 This specialization makes the exogenous chain control correlated secondary-link fading, while the adaptive jammer creates endogenous interference through its selected channel and leakage profile.
+The wireless model above specifies the physical interaction.
+We next define the learning objective and distinguish it from the communication quantity used for evaluation.
 Let $\pi_{\btheta}(a|s)$ and $\nu_{\bpsi}(b|s)$ denote differentiable transmitter and jammer policies.
-Their normalized discounted return is
+The physical normalized discounted spectral-efficiency return is
 \[
 J(\btheta,\bpsi)=(1-\delta)\E\!\left[\sum_{t=0}^{\infty}\delta^t r_t\right],
 \]
 where $\delta\in(0,1)$ is the discount factor.
-To preserve stochastic channel exploration during joint adaptation, we train both policies on the entropy-regularized return:
+Policy-gradient training can concentrate either softmax policy early and suppress exploration as the radio mode or opponent changes.
+We therefore train with the entropy-regularized return
 \[
 J_\tau=J+(1-\delta)\tau\E\!\left[\sum_{t\geq0}\delta^t\{H(\pi_{\btheta}(\cdot|s_t))-H(\nu_{\bpsi}(\cdot|s_t))\}\right],
 \]
 where $\tau>0$ is the entropy weight and $H(\cdot)$ is the Shannon entropy.
-Thus all learning updates and the Lyapunov merit use $J_\tau$, whereas the separate rate safeguard and reported worst-case communication performance use $J$.
-Let $\Pi_{\rm T}$ and $\Pi_{\rm J}$ denote the stationary Markov policy spaces of the transmitter and jammer, respectively.
-The learned policies are neural, while evaluation best responses range over these full stationary-policy spaces.
-The primary communication metric is the transmitter's worst-case normalized discounted spectral-efficiency return,
+The entropy terms preserve exploration and smooth the best-response quantities used by the controller.
+Policy gradients and the merit use $J_\tau$, whereas the rate safeguard and reported rates use $J$ and retain their physical bit/s/Hz meaning.
+To test robustness beyond the current neural opponent, let $\Pi_{\rm T}$ and $\Pi_{\rm J}$ be the full stationary Markov policy spaces.
+The primary metric is the learned transmitter's worst-case return over $\Pi_{\rm J}$,
 \[
 R_{\rm BR}(\btheta)=\min_{\nu\in\Pi_{\rm J}}J(\pi_{\btheta},\nu).
 \]
-The reported unregularized policy exploitability is
+The unregularized exploitability diagnostic measures the remaining improvement available to either player:
 \[
 \Delta(\bz)=\max_{\pi\in\Pi_{\rm T}}J(\pi,\nu_{\bpsi})-\min_{\nu\in\Pi_{\rm J}}J(\pi_{\btheta},\nu).
 \]
-Replacing $J$ by $J_\tau$ defines the regularized gap $\Delta_\tau$ used in the merit.
-Dynamic programming computes $R_{\rm BR}$ and $\Delta$, while soft Bellman recursion computes $\Delta_\tau$; the remaining problem is stable simultaneous adaptation.
+Replacing $J$ by $J_\tau$ defines the smooth regularized gap $\Delta_\tau$ used only inside the training merit.
+Dynamic programming computes $R_{\rm BR}$, $\Delta$, and its soft counterpart $\Delta_\tau$.
+With the communication objective fixed, the next section addresses the instability of simultaneous transmitter--jammer adaptation.
 
 \section{Geometry-Aware Minimax Policy Learning}
 \subsection{Curvature-Induced Two-Direction Learning}
@@ -192,7 +197,7 @@ Their common correction motivates the Jacobian--field direction
 \end{equation}
 Thus, $\bG$ predicts how simultaneous transmitter--jammer movement changes the next joint policy gradient; Section~IV identifies when it counters rotational coupling.
 Their second-order expansions couple the field and curvature terms through the fixed relation $(s,s^2)$.
-Because the geometry can change independently along these directions, LCMPL assigns field and curvature learning rates $\beta_k$ and $\gamma_k$:
+Because the geometry can change independently along these directions, LCMPL assigns field and curvature step sizes $\beta_k$ and $\gamma_k$:
 \begin{equation}
 \bz_{k+1}=\bz_k-\beta_k\widehat{\bF}_k+\gamma_k\widehat{\bG}_k.
 \label{eq:update}
@@ -223,19 +228,22 @@ V(\bz)=\frac{\phi(\bz)}{\phi_0}+\mathcal L_{\rm c}(\bz),
 \label{eq:merit}
 \end{equation}
 where $\phi_0>0$ is the initial field-energy scale.
+The merit is a training control signal, not a replacement for the reported physical rate.
 Its predicted one-step change supplies a common criterion for geometric stabilization and communication quality.
 
-Let $\bd_{k,1}=-\widehat{\bF}_k$, $\bd_{k,2}=\widehat{\bG}_k$, and $\bu=(\beta,\gamma)^{\mathsf T}$.
-For positive probe radii $q_{k,1}$ and $q_{k,2}$, define $V_{k,i}^{\pm}=V(\bz_k\pm q_{k,i}\bd_{k,i})$ and $V_k^0=V(\bz_k)$.
-Centered finite differences set $[\ba_k]_i=(V_{k,i}^{+}-V_{k,i}^{-})/(2q_{k,i})$ and
+The update in Eq.~\eqref{eq:update} lies in a two-dimensional span even when the neural parameter space is large.
+LCMPL therefore models the merit only along the sampled field and curvature directions, avoiding a full parameter-space Hessian.
+Let $\bd_{k,1}=-\widehat{\bF}_k$, $\bd_{k,2}=\widehat{\bG}_k$, and let $\bu=(\beta,\gamma)^{\mathsf T}$ collect their candidate step sizes.
+For positive probe radii $\varepsilon_{k,1}$ and $\varepsilon_{k,2}$, evaluate $V_{k,i}^{\pm}=V(\bz_k\pm\varepsilon_{k,i}\bd_{k,i})$ and $V_k^0=V(\bz_k)$.
+Centered finite differences estimate the first and second directional changes as $[\ba_k]_i=(V_{k,i}^{+}-V_{k,i}^{-})/(2\varepsilon_{k,i})$ and
 \[
-[\bH_k]_{ii}=\max\!\left\{\frac{V_{k,i}^{+}-2V_k^0+V_{k,i}^{-}}{q_{k,i}^2},h_{\min}\right\}
+[\bH_k]_{ii}=\max\!\left\{\frac{V_{k,i}^{+}-2V_k^0+V_{k,i}^{-}}{\varepsilon_{k,i}^2},h_{\min}\right\}
 \]
 for $i\in\{1,2\}$, with $[\bH_k]_{12}=[\bH_k]_{21}=0$ and $h_{\min}>0$.
-The diagonal model avoids mixed-direction probes.
+The positive floor $h_{\min}$ makes each scalar model well posed, and the diagonal form avoids mixed-direction probes.
 If $\widehat{\bG}_k=0$, set $[\ba_k]_2=0$ and $[\bH_k]_{22}=h_{\min}$; the QP then reduces to the field-only model.
-Let $\bar\beta>0$ and $0<\gamma_{\min}\leq\gamma_{\max}$ be deterministic global rate bounds, and let the oracle-dependent cap $\gamma_{\min}\leq\bar\gamma_k\leq\gamma_{\max}$ be measurable after the current oracle query.
-LCMPL selects its learning-rate pair with the box-constrained quadratic program (QP)
+Let $\bar\beta>0$ and $0<\gamma_{\min}\leq\gamma_{\max}$ be deterministic global step-size bounds, and let the oracle-dependent cap $\gamma_{\min}\leq\bar\gamma_k\leq\gamma_{\max}$ be measurable after the current oracle query.
+LCMPL selects the two step sizes with the box-constrained quadratic program (QP)
 \begin{equation}
 \begin{aligned}
 m_k(\bu)&=\ba_k^{\mathsf T}\bu+\tfrac12\bu^{\mathsf T}\bH_k\bu,\\
@@ -247,16 +255,15 @@ m_k(\bu)&=\ba_k^{\mathsf T}\bu+\tfrac12\bu^{\mathsf T}\bH_k\bu,\\
 \end{equation}
 Let $\bu_k^F$ minimize $m_k$ over $\mathcal U_F=[0,\bar\beta]\times\{0\}$.
 Define the extra fitted-model decrease supplied by the curvature coordinate as $D_{G,k}^{\rm box}=m_k(\bu_k^F)-m_k(\widetilde{\bu}_k)\geq0$.
-LCMPL independently backtracks $\widetilde{\bu}_k$ and $\bu_k^F$ from the same $\bz_k$ until the realized merit does not exceed $V(\bz_k)$; a failed search returns the zero step.
-The resulting pairs are $\bar{\bu}_k$ and $\bar{\bu}_k^F$.
-The safeguard sets $\bu_k^{\rm acc}=\bar{\bu}_k$ when the curvature candidate has no larger realized $V$ and no smaller $R_{\rm BR}$; otherwise, $\bu_k^{\rm acc}=\bar{\bu}_k^F$.
-Set $(\beta_k,\gamma_k)^{\mathsf T}=\bu_k^{\rm acc}$ in Eq.~\eqref{eq:update}.
-The LCMPL-F ablation keeps the merit, field-direction QP and probes, $\beta$ bound, and backtracking rule but omits $\widehat{\bG}_k$ and fixes $\gamma_k=0$.
+Because the local model need not predict a finite step exactly, LCMPL backtracks $\widetilde{\bu}_k$ and $\bu_k^F$ independently from the same $\bz_k$ until the realized merit does not increase; a failed search returns zero.
+Denote the backtracked pairs by $\bar{\bu}_k$ and $\bar{\bu}_k^F$.
+The safeguard accepts $\bu_k^{\rm acc}=\bar{\bu}_k$ when it has no larger realized $V$ and no smaller $R_{\rm BR}$ than $\bar{\bu}_k^F$; otherwise, it selects $\bar{\bu}_k^F$ and uses $(\beta_k,\gamma_k)^{\mathsf T}=\bu_k^{\rm acc}$ in Eq.~\eqref{eq:update}.
+LCMPL-F fixes $\gamma_k=0$ while retaining the field-direction merit, probes, QP, and safeguard.
 Fig.~\ref{fig:framework} summarizes the loop in which communication feedback forms a trajectory batch $\mathcal B_k$ for the field and Jacobian-action estimates.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.78\columnwidth, trim=50 65 40 30, clip]{figures/algorithm_framework.pdf}
+\includegraphics[width=0.68\columnwidth, trim=50 65 40 30, clip]{figures/algorithm_framework.pdf}
 \caption{LCMPL minimax policy-learning framework.}
 \label{fig:framework}
 \end{figure}
@@ -289,8 +296,8 @@ The analysis starts from an explicit biased-oracle model.
 \label{ass:oracles}
 \begin{enumerate}
 \item[(a)] A compact set $\mathcal T$ contains all accepted iterates, trial segments, and probe points, and $\bF\in C^1$ and $V\in C^3$ near $\mathcal T$, with $\|\nabla V\|\leq G_V$, $\|\nabla^2V\|\leq H_V$, and $\|\nabla^3V\|\leq M_3$.
-\item[(b)] The stochastic oracles satisfy $\widehat{\bF}_k=\bF(\bz_k)+\bb_k^F+\boldsymbol\zeta_k^F$ and $\widehat{\bG}_k=\bG(\bz_k)+\bb_k^G+\boldsymbol\zeta_k^G$, where the biases are $\mathcal F_k$-measurable and $\E[\boldsymbol\zeta_k^F\mid\mathcal F_k]=\E[\boldsymbol\zeta_k^G\mid\mathcal F_k]=0$.
-\item[(c)] For $X\in\{F,G\}$, finite nonnegative $\mathcal F_k$-measurable bounds $b_{X,k}$, $\sigma_{2,k}$, and $\sigma_{3,k}$ satisfy $\|\bb_k^X\|\leq b_{X,k}$, $\E[\|\boldsymbol\zeta_k^X\|^2\mid\mathcal F_k]\leq\sigma_{2,k}^2$, and $\E[\|\boldsymbol\zeta_k^X\|^3\mid\mathcal F_k]\leq\sigma_{3,k}^3$.
+\item[(b)] For $X\in\{F,G\}$, $\widehat{\boldsymbol X}_k=\boldsymbol X(\bz_k)+\bb_k^X+\boldsymbol\zeta_k^X$, where $\bb_k^X$ is $\mathcal F_k$-measurable and $\E[\boldsymbol\zeta_k^X\mid\mathcal F_k]=0$.
+\item[(c)] Finite nonnegative $\mathcal F_k$-measurable bounds satisfy $\|\bb_k^X\|\leq b_{X,k}$ and $\E[\|\boldsymbol\zeta_k^X\|^p\mid\mathcal F_k]\leq\sigma_{p,X,k}^p$ for $p\in\{2,3\}$ and $X\in\{F,G\}$.
 \end{enumerate}
 \end{assumption}
 The same-batch JVP error is allowed in $\bb_k^G$ and is not assumed unbiased.
@@ -332,30 +339,22 @@ Because $V=\phi/\phi_0+\mathcal L_{\rm c}$, selecting the larger energy signal g
 \label{eq:geometry_certificate}
 \end{equation}
 
-To state the drift bound, let $s\in(0,\min\{\bar\beta,\gamma_{\min}\}]$ be a deterministic pure-coordinate comparator and let $q_{k,i}\leq\bar q_i$.
-For $\bd_{k,1}=-\widehat{\bF}_k$ and $\bd_{k,2}=\widehat{\bG}_k$, the $C^3$ condition bounds the centered first- and second-coefficient errors by $M_3q_{k,i}^2\|\bd_{k,i}\|^3/6$ and $M_3q_{k,i}\|\bd_{k,i}\|^3/3$.
-For $X\in\{F,G\}$, let $\widehat{\boldsymbol X}_k$ denote the corresponding oracle, and for $p\in\{2,3\}$ set $M_{p,X,k}=\E[\|\widehat{\boldsymbol X}_k\|^p\mid\mathcal F_k]$.
-Set $b_{D,k}=\max\{b_{F,k},b_{G,k}\}$ and $M_{p,D,k}=\max\{M_{p,F,k},M_{p,G,k}\}$.
-The omitted mixed Hessian term is bounded by $R_k^{\rm cross}=H_V\beta_k\gamma_k\|\widehat{\bF}_k\|\|\widehat{\bG}_k\|$.
-Define the fitted-model loss from backtracking or safeguarding as $R_k^{\rm acc}=m_k(\bu_k^{\rm acc})-m_k(\widetilde{\bu}_k)\geq0$.
-The residual below groups communication-loss variation, oracle bias and noise, probe error, the omitted mixed Hessian term, and safeguard or backtracking loss.
-With $(X_1,X_2)=(\bF,\bG)$, $(u_1^{\max},u_2^{\max})=(\bar\beta,\gamma_{\max})$, $C_{2,k}=\sqrt{M_{2,F,k}M_{2,G,k}}$, and $A_k=\E[R_k^{\rm acc}\mid\mathcal F_k]$, the conditional probe, Taylor, and mixed-term bounds yield the $\mathcal F_k$-measurable residual
+The stochastic theorem separates geometric decrease from sampled-oracle and finite-probe errors.
+Let $s\in(0,\min\{\bar\beta,\gamma_{\min}\}]$ be a deterministic pure-coordinate comparator, and assume bounded probe radii.
+For $p\in\{2,3\}$, define $M_{p,X,k}=\E[\|\widehat{\boldsymbol X}_k\|^p\mid\mathcal F_k]$, $M_{p,k}=\max_X M_{p,X,k}$, $b_k=\max_X b_{X,k}$, and $C_{2,k}=\sqrt{M_{2,F,k}M_{2,G,k}}$.
+Let $A_k=\E[m_k(\bu_k^{\rm acc})-m_k(\widetilde{\bu}_k)\mid\mathcal F_k]\geq0$ denote accepted-step model loss.
+Smoothness and centered-probe bounds yield
 \begin{equation}
-\begin{aligned}
-\mathcal R_k(s)={}&s(G_Vb_{D,k}+B_{\rm c})
-+\tfrac12s^2\left(H_VM_{2,D,k}+h_{\min}\right)\\
-&+M_3\sum_{i=1}^2\left[C_{\rm pr}(\bar q_i^2+\bar q_i)
-+\tfrac23(u_i^{\max})^3\right]M_{3,X_i,k}\\
-&+H_V\bar\beta\gamma_{\max}C_{2,k}+A_k,
-\end{aligned}
+\mathcal R_k(s)=s(G_Vb_k+B_{\rm c})
++C_s(1+M_{2,k}+M_{3,k}+C_{2,k})+A_k,
 \label{eq:residual}
 \end{equation}
-Here, $C_{\rm pr}<\infty$ is a deterministic finite-difference constant determined by the learning-rate box.
-Thus, $\mathcal R_k$ is $\mathcal F_k$-measurable and bounds all random residuals after conditioning.
+where $C_s<\infty$ is deterministic and depends only on $s$, the smoothness constants, probe bounds, step-size box, and $h_{\min}$.
+The terms in Eq.~\eqref{eq:residual} cover communication-merit variation, oracle bias and noise, probe and Taylor errors, omitted mixed curvature, and safeguard or backtracking loss.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.73\textwidth]{results/theory_aligned_v1_20260813/figures/neural_benchmark_theory.pdf}
+\includegraphics[width=0.63\textwidth]{results/theory_aligned_v1_20260813/figures/neural_benchmark_theory.pdf}
 \caption{Adversarial DSA results: (a)--(c) nominal population dynamics; (d) leakage-dependent curvature activation; (e) oracle fidelity; (f) channel scaling; and (g)--(h) equal-interaction trajectory learning.
 Means use 12 seeds except eight in (f); bands in (a)--(c) and (g)--(h) show one standard error, and bars in (d)--(f) show 95\% confidence intervals.}
 \label{fig:neural}
@@ -429,7 +428,7 @@ Corollary~\ref{cor:rate} bounds worst-case spectral-efficiency loss under local 
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.84\textwidth]{results/theory_aligned_v1_20260813/figures/wireless_stress_rate.pdf}
+\includegraphics[width=0.68\textwidth]{results/theory_aligned_v1_20260813/figures/wireless_stress_rate.pdf}
 \caption{Wireless stress across jammer strength, switching cost, leakage, and mode persistence: 12-seed means and 95\% confidence intervals.}
 \label{fig:wireless_stress}
 \end{figure*}
@@ -455,8 +454,8 @@ LCMPL-F is the field-only ablation defined in Section~III-B.
 
 \emph{LCMPL configuration:}
 Let $f_k=\|\widehat{\bF}_k\|$ and $g_k=\|\widehat{\bG}_k\|$.
-We use $q_{k,1}=\min\{0.012,0.02/\max(f_k,10^{-12})\}$ and clip $q_{k,2}=q_{k,1}f_k/g_k$ to $[2\times10^{-4},0.025]$.
-We set $\bar\beta=0.08$, $\gamma_{\min}=5\times10^{-4}$, $\gamma_{\max}=0.12$, $\bar\gamma_k=\operatorname{clip}(0.08f_k/g_k,\gamma_{\min},\gamma_{\max})$, and $h_{\min}=10^{-6}$; at most eight backtracking contractions by $1/2$ seek a merit change no larger than $10^{-10}$.
+The probe radii scale inversely with $f_k$ and $g_k$ and are capped at $0.012$ and $0.025$, respectively; the released configuration records their exact rule.
+We set $\bar\beta=0.08$, $\gamma_{\min}=5\times10^{-4}$, $\gamma_{\max}=0.12$, $\bar\gamma_k=\min\{\gamma_{\max},\max\{\gamma_{\min},0.08f_k/\max(g_k,10^{-12})\}\}$, and $h_{\min}=10^{-6}$; at most eight backtracking contractions by $1/2$ seek a merit change no larger than $10^{-10}$.
 The merit uses weights $(\lambda_\Delta,\lambda_R)=(0.35,1.5)$, and its components are normalized by their positive initial values.
 
 \subsection{Nominal Anti-Jamming Performance}
@@ -483,9 +482,8 @@ Fig.~\ref{fig:neural}(d) shows 12-seed leakage-dependent curvature activation, w
 LCMPL has the highest final mean rate in every plotted sweep cell, with paired mean gains of $0.0019$--$0.0161$ bit/s/Hz over LCMPL-F.
 
 \section{Conclusion}
-LCMPL separates field and curvature adaptation in adversarial DSA.
-In rotational regimes, curvature supplies Lyapunov decrease, while the same-state safeguard retains it only when it does not underperform the field-only candidate.
-The biased-oracle analysis bounds time-averaged stationarity and, under a local policy-gap condition, worst-case spectral-efficiency loss; LCMPL achieves the highest final mean worst-case rate across the reported regimes.
+LCMPL separates field and curvature step sizes in adversarial DSA and retains curvature only when the same-state safeguard validates its merit and rate.
+The biased-oracle analysis bounds time-averaged stationarity and, under a local policy-gap condition, worst-case spectral-efficiency loss; LCMPL achieves the highest final mean rate across the reported regimes.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
