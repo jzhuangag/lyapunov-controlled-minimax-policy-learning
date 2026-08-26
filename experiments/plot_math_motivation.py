@@ -122,7 +122,7 @@ def direction_panel(axis, curvature=False):
     axis.set(xlim=(-1.55, 1.55), ylim=(-1.55, 1.55), xlabel=r"$x$", ylabel=r"$y$")
     axis.set_box_aspect(1)
     axis.xaxis.labelpad = 0.3
-    axis.text(0.5, -0.28, panel, transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
+    axis.text(0.5, -0.22, panel, transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
 
 
 def ratio_map_panel(axis, beta):
@@ -147,7 +147,7 @@ def ratio_map_panel(axis, beta):
     axis.set(xlim=(1.2, 4.2), ylim=(0.0, 12.0), xlabel=r"local coupling $\omega$", ylabel=r"step-size ratio $\gamma/\beta$")
     axis.set_box_aspect(1)
     axis.xaxis.labelpad = 0.5
-    axis.text(0.5, -0.28, "(c) Coupling-dependent contraction", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
+    axis.text(0.5, -0.22, "(c) Coupling-dependent contraction", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
 
 
 def switching_panel(axis, beta):
@@ -177,7 +177,7 @@ def switching_panel(axis, beta):
     top_axis.tick_params(axis="x", length=0, pad=1.5, labelsize=5.7)
     axis.set_box_aspect(1)
     axis.xaxis.labelpad = 0.5
-    axis.text(0.5, -0.28, "(d) Switching local coupling", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
+    axis.text(0.5, -0.22, "(d) Switching local coupling", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
 
 
 def main():
@@ -191,7 +191,7 @@ def main():
     direction_panel(axes[0, 1], curvature=True)
     ratio_map_panel(axes[1, 0], beta)
     switching_panel(axes[1, 1], beta)
-    figure.subplots_adjust(left=0.12, right=0.985, top=0.97, bottom=0.10, wspace=0.38, hspace=0.72)
+    figure.subplots_adjust(left=0.12, right=0.985, top=0.97, bottom=0.10, wspace=0.38, hspace=0.40)
     figure.savefig(args.output / "mathematical_motivation.pdf", bbox_inches="tight", pad_inches=0.015)
     figure.savefig(args.output / "mathematical_motivation.png", dpi=420, bbox_inches="tight", pad_inches=0.015)
     plt.close(figure)
