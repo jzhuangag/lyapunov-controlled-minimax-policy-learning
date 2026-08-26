@@ -70,10 +70,11 @@ The central problem is to stabilize joint policy adaptation without sacrificing 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.8\columnwidth]{figures/mathematical_motivation.pdf}
-\caption{Geometry of curvature stabilization.
-(a) Simultaneous gradient descent--ascent (GDA) rotates in a bilinear game, whereas the proximal point method (PPM) and extragradient method (EGM) contract.
-(b) The negative saddle field is tangent to field-energy contours, while its Jacobian--field correction points inward; this separation motivates independent control of the two directions.}
+\includegraphics[width=0.82\columnwidth]{figures/mathematical_motivation.pdf}
+\caption{Why saddle-field step sizes must adapt to local coupling.
+For a scaled bilinear local model, (a) maps the one-step residual factor $q$ over coupling $\omega$ and the field-to-curvature step-size ratio.
+The contraction region $q<1$ and its locally minimizing ratio vary with coupling.
+Panel (b) follows a switching coupling sequence; a fixed ratio crosses the $q=1$ boundary, whereas the local ratio remains contractive.}
 \label{fig:motivation}
 \end{figure}
 
@@ -81,7 +82,9 @@ A two-player zero-sum Markov game captures this interaction \cite{Shapley1953Sto
 The transmitter policy $\pi_{\btheta}$, with parameter vector $\btheta$, maximizes a discounted spectral-efficiency return, while the jammer policy $\nu_{\bpsi}$, with parameter vector $\bpsi$, minimizes it through $\max_{\btheta}\min_{\bpsi}J(\btheta,\bpsi)$.
 Their policy gradients form a saddle field; worst-case transmitter return measures communication robustness, while exploitability measures sensitivity to further policy adaptation.
 
-As Fig.~\ref{fig:motivation} illustrates, simultaneous gradient descent--ascent (GDA) can cycle on a skew-dominant joint field \cite{Balduzzi2018Mechanics}.
+Fig.~\ref{fig:motivation} isolates the resulting learning mechanism.
+In a bilinear local model, simultaneous gradient descent--ascent (GDA) follows a rotational field action and can cycle, while the Jacobian--field action supplies radial contraction \cite{Balduzzi2018Mechanics}.
+The contraction region depends on both local coupling and the field-to-curvature step-size ratio; when the wireless state or either neural policy changes that coupling, a fixed ratio can move from contraction to expansion.
 The proximal point method (PPM) evaluates the field implicitly, whereas the extragradient method (EGM) uses an extrapolated pair \cite{Rockafellar1976PPM,Korpelevich1976Extragradient}.
 Their local expansions include a Jacobian--field action but couple the effective field and curvature scales through one learning rate \cite{Lu2022ODE}.
 Adaptive Mirror-Prox methods use observed operator geometry to tune extragradient updates across smoothness regimes \cite{Antonakopoulos2021AdaProx}, while double-step extragradient assigns distinct scales to the extrapolation and update stages \cite{Hsieh2020DSEG}.
@@ -98,7 +101,7 @@ We prove an $O(1/K)$ stationarity transient with an explicit residual and, under
 \subsection{Multi-Channel Wireless Environment and Stage Utility}
 \begin{figure}[t]
 \centering
-\includegraphics[width=1\columnwidth, trim=40 65 0 30, clip]{figures/system_model.pdf}
+\includegraphics[width=0.92\columnwidth, trim=40 65 0 30, clip]{figures/system_model.pdf}
 \caption{Adversarial wireless environment for anti-jamming dynamic spectrum access.}
 \label{fig:system}
 \end{figure}
@@ -255,7 +258,7 @@ Fig.~\ref{fig:framework} summarizes the loop in which communication feedback for
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=1\columnwidth, trim=50 65 40 30, clip]{figures/algorithm_framework.pdf}
+\includegraphics[width=0.92\columnwidth, trim=50 65 40 30, clip]{figures/algorithm_framework.pdf}
 \caption{LCMPL minimax policy-learning framework.}
 \label{fig:framework}
 \end{figure}
@@ -354,7 +357,7 @@ Thus, $\mathcal R_k$ is $\mathcal F_k$-measurable and bounds all random residual
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{results/theory_aligned_v1_20260813/figures/neural_benchmark_theory.pdf}
+\includegraphics[width=0.84\textwidth]{results/theory_aligned_v1_20260813/figures/neural_benchmark_theory.pdf}
 \caption{Adversarial DSA results: (a)--(c) nominal population dynamics; (d) leakage-dependent curvature activation; (e) oracle fidelity; (f) channel scaling; and (g)--(h) equal-interaction trajectory learning.
 Means use 12 seeds except eight in (f); bands in (a)--(c) and (g)--(h) show one standard error, and bars in (d)--(f) show 95\% confidence intervals.}
 \label{fig:neural}
@@ -428,7 +431,7 @@ Corollary~\ref{cor:rate} bounds worst-case spectral-efficiency loss under local 
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{results/theory_aligned_v1_20260813/figures/wireless_stress_rate.pdf}
+\includegraphics[width=0.84\textwidth]{results/theory_aligned_v1_20260813/figures/wireless_stress_rate.pdf}
 \caption{Wireless stress across jammer strength, switching cost, leakage, and mode persistence: 12-seed means and 95\% confidence intervals.}
 \label{fig:wireless_stress}
 \end{figure*}
