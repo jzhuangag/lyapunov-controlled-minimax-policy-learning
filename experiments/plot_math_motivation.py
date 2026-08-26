@@ -39,12 +39,90 @@ FIXED = "#7B4AB5"
 ADAPTIVE = "#111111"
 NEUTRAL = "#6E7B83"
 FIELD = "#1F77B4"
+CURVATURE = "#2A8C64"
+STAR = "#F2C94C"
 
 
 def amplification(omega, ratio, beta):
     """One-step norm factor for z_+=z-beta F_omega+gamma G_omega."""
     gamma = beta * ratio
     return np.sqrt((1.0 - gamma * omega**2) ** 2 + (beta * omega) ** 2)
+
+
+def draw_energy(axis, limit=1.55):
+    grid = np.linspace(-limit, limit, 240)
+    x_grid, y_grid = np.meshgrid(grid, grid)
+    energy = 0.5 * (x_grid**2 + y_grid**2)
+    levels = np.linspace(0.15, 2.0, 8)
+    axis.contourf(
+        x_grid,
+        y_grid,
+        energy,
+        levels=np.r_[0.0, levels, 3.0],
+        cmap="Blues",
+        alpha=0.30,
+    )
+    axis.contour(
+        x_grid,
+        y_grid,
+        energy,
+        levels=levels,
+        colors="#78909C",
+        linewidths=0.40,
+        alpha=0.65,
+    )
+    axis.axhline(0.0, color="#AAB4BA", lw=0.35)
+    axis.axvline(0.0, color="#AAB4BA", lw=0.35)
+
+
+def direction_panel(axis, curvature=False):
+    draw_energy(axis)
+    coordinates = np.linspace(-1.25, 1.25, 9)
+    x_grid, y_grid = np.meshgrid(coordinates, coordinates)
+    if curvature:
+        u_grid = -x_grid
+        v_grid = -y_grid
+        color = CURVATURE
+        label = r"$+G$: inward"
+        panel = "(b) Curvature action"
+    else:
+        u_grid = -y_grid
+        v_grid = x_grid
+        color = FIELD
+        label = r"$-F$: rotational"
+        panel = "(a) Field action"
+    norm = np.sqrt(u_grid**2 + v_grid**2)
+    nonzero = norm > 0.0
+    u_grid = np.divide(u_grid, norm, out=np.zeros_like(u_grid), where=nonzero)
+    v_grid = np.divide(v_grid, norm, out=np.zeros_like(v_grid), where=nonzero)
+    axis.quiver(
+        x_grid,
+        y_grid,
+        u_grid,
+        v_grid,
+        color=color,
+        angles="xy",
+        scale_units="xy",
+        scale=5.2,
+        width=0.010,
+        headwidth=3.6,
+        headlength=4.4,
+        zorder=4,
+    )
+    axis.plot(0.0, 0.0, marker="*", ms=7.0, color=STAR, mec="#273746", mew=0.55, zorder=6)
+    axis.legend(
+        [Line2D([0], [0], color=color, lw=1.4)],
+        [label],
+        loc="upper left",
+        frameon=True,
+        framealpha=0.92,
+        borderpad=0.22,
+        handlelength=1.7,
+    )
+    axis.set(xlim=(-1.55, 1.55), ylim=(-1.55, 1.55), xlabel=r"$x$", ylabel=r"$y$")
+    axis.set_box_aspect(1)
+    axis.xaxis.labelpad = 0.3
+    axis.text(0.5, -0.28, panel, transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
 
 
 def ratio_map_panel(axis, beta):
@@ -67,8 +145,9 @@ def ratio_map_panel(axis, beta):
     ]
     axis.legend(handles=handles, loc="upper right", frameon=True, framealpha=0.92, borderpad=0.24, handlelength=1.8)
     axis.set(xlim=(1.2, 4.2), ylim=(0.0, 12.0), xlabel=r"local coupling $\omega$", ylabel=r"step-size ratio $\gamma/\beta$")
+    axis.set_box_aspect(1)
     axis.xaxis.labelpad = 0.5
-    axis.text(0.5, -0.31, "(a) Coupling-dependent contraction", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
+    axis.text(0.5, -0.28, "(c) Coupling-dependent contraction", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
 
 
 def switching_panel(axis, beta):
@@ -96,8 +175,9 @@ def switching_panel(axis, beta):
     top_axis.set_xticks([9, 27, 45, 63])
     top_axis.set_xticklabels([rf"$\omega={value:.1f}$" for value in mode_couplings])
     top_axis.tick_params(axis="x", length=0, pad=1.5, labelsize=5.7)
+    axis.set_box_aspect(1)
     axis.xaxis.labelpad = 0.5
-    axis.text(0.5, -0.31, "(b) Switching local coupling", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
+    axis.text(0.5, -0.28, "(d) Switching local coupling", transform=axis.transAxes, ha="center", va="top", fontsize=7.0)
 
 
 def main():
@@ -106,10 +186,12 @@ def main():
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     beta = 0.04
-    figure, axes = plt.subplots(1, 2, figsize=(3.48, 1.78))
-    ratio_map_panel(axes[0], beta)
-    switching_panel(axes[1], beta)
-    figure.subplots_adjust(left=0.12, right=0.985, top=0.89, bottom=0.27, wspace=0.38)
+    figure, axes = plt.subplots(2, 2, figsize=(3.48, 3.20))
+    direction_panel(axes[0, 0], curvature=False)
+    direction_panel(axes[0, 1], curvature=True)
+    ratio_map_panel(axes[1, 0], beta)
+    switching_panel(axes[1, 1], beta)
+    figure.subplots_adjust(left=0.12, right=0.985, top=0.97, bottom=0.10, wspace=0.38, hspace=0.72)
     figure.savefig(args.output / "mathematical_motivation.pdf", bbox_inches="tight", pad_inches=0.015)
     figure.savefig(args.output / "mathematical_motivation.png", dpi=420, bbox_inches="tight", pad_inches=0.015)
     plt.close(figure)
