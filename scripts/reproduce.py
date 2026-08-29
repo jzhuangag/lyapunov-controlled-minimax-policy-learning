@@ -107,6 +107,13 @@ def compile_papers(requested: Optional[Path]) -> Path:
     for source in ("ICC2027_submit.tex", "ICC2027_camera_ready.tex"):
         target = output / Path(source).stem
         target.mkdir()
+        shutil.copy2(ROOT / source, target / source)
+        shutil.copy2(ROOT / "refs.bib", target / "refs.bib")
+        shutil.copytree(ROOT / "figures", target / "figures")
+        locked_figures = target / "results" / "theory_aligned_v1_20260813" / "figures"
+        locked_figures.mkdir(parents=True)
+        for figure in ("neural_benchmark_theory.pdf", "wireless_stress_rate.pdf"):
+            shutil.copy2(ANALYSIS / "figures" / figure, locked_figures / figure)
         run(
             [
                 latexmk,
@@ -114,10 +121,10 @@ def compile_papers(requested: Optional[Path]) -> Path:
                 "-interaction=nonstopmode",
                 "-halt-on-error",
                 "-file-line-error",
-                "-outdir={}".format(target),
                 source,
             ],
             records,
+            cwd=target,
         )
     write_manifest(output, "paper", records)
     return output
