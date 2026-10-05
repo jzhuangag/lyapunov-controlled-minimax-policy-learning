@@ -1,45 +1,36 @@
 {
-  "model_version": "exogenous-ph-v1",
+  "model_version": "queue-aware-dsa-v1",
   "device": "CPU",
   "thread_count": 1,
-  "population": {
-    "nominal_configuration": "Hard-C8-H64",
-    "seeds": [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411],
+  "state": ["radio_mode", "queue_length", "previous_transmitter_channel"],
+  "joint_action_dependent_transition": true,
+  "shared_environment": {
+    "channels": 4,
+    "modes": 4,
+    "queue_capacity": 4,
+    "hidden_width": 32,
+    "parameters_per_player": 452,
+    "packet_rate": 1.0,
+    "jammer_to_noise": 18.0,
+    "mode_persistence": 0.75,
+    "switch_cost": 0.05,
+    "adjacent_leakage": 0.50,
+    "queue_penalty": 0.12,
+    "drop_penalty": 0.60
+  },
+  "nominal": {
+    "arrival_rate": 0.45,
+    "seeds": [600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611],
     "methods": ["QP+G", "noG", "Minimax-PPO", "GDA", "EGM", "PPM-3"],
     "joint_updates": 30,
     "checkpoint_every": 5
   },
-  "trajectory_sampled": {
-    "configuration": "Hard-C8-H64",
-    "seeds": [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411],
-    "methods": ["QP+G", "noG", "GDA", "EGM", "PPM-3"],
-    "joint_updates": 30,
-    "rollout_horizon": 64,
-    "trajectories_per_update": 128,
-    "transitions_per_update": 8192,
-    "total_transitions_per_method_seed": 245760
-  },
-  "oracle_quality": {
-    "training_seeds": [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411],
-    "checkpoints": [0, 15, 30],
-    "batch_trajectories": [32, 64, 128, 256],
-    "replicates": 4,
-    "horizon": 64
-  },
-  "wireless_stress": {
-    "seeds": [500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511],
+  "load_stress": {
+    "arrival_rates": [0.20, 0.45, 0.70],
+    "seeds": [600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611],
     "methods": ["QP+G", "noG", "PPM-3"],
     "joint_updates": 25,
-    "channels": 6,
-    "hidden_width": 32,
-    "jammer_to_noise": [12.0, 16.0, 20.0, 24.0],
-    "switching_cost": [0.02, 0.06, 0.10, 0.14],
-    "adjacent_leakage": [0.20, 0.40, 0.60, 0.80],
-    "mode_persistence": [0.40, 0.55, 0.70, 0.85]
+    "checkpoint_every": 5
   },
-  "hyperparameter_validation": {
-    "validation_seeds": [0, 1],
-    "test_seeds": [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411],
-    "outcome_based_test_seed_selection": false
-  }
+  "test_seed_selection": "fixed before confirmatory execution; no outcome-based filtering or reordering"
 }

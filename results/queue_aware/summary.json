@@ -1,0 +1,100 @@
+{
+  "model_version": "queue-aware-dsa-v1",
+  "protocol_locked_before_confirmatory_execution": true,
+  "seed_selection": "fixed queue-aware seeds; no outcome-based filtering or reordering",
+  "seeds": [
+    600,
+    601,
+    602,
+    603,
+    604,
+    605,
+    606,
+    607,
+    608,
+    609,
+    610,
+    611
+  ],
+  "methods": [
+    "QP+G",
+    "noG",
+    "PPM-3"
+  ],
+  "joint_updates": 25,
+  "checkpoint_every": 5,
+  "state": [
+    "radio_mode",
+    "queue_length",
+    "previous_transmitter_channel"
+  ],
+  "joint_action_dependent_transition": true,
+  "arrival_process": "independent Bernoulli arrivals",
+  "service_process": "one packet with Rayleigh-outage success probability exp(-(2^R-1)/mean_SINR)",
+  "initial_state": "empty queue; uniform radio mode and previous channel",
+  "primary_metrics": [
+    "worst-case discounted queue-aware utility",
+    "goodput against the utility best response",
+    "average backlog against the utility best response",
+    "drop probability against the utility best response"
+  ],
+  "configurations": [
+    {
+      "name": "Queue-load-0.20",
+      "arrival_rate": 0.2,
+      "channels": 4,
+      "modes": 4,
+      "queue_capacity": 4,
+      "hidden_width": 32,
+      "packet_rate": 1.0,
+      "jammer_to_noise": 18.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.05,
+      "adjacent_leakage": 0.5,
+      "queue_penalty": 0.12,
+      "drop_penalty": 0.6
+    },
+    {
+      "name": "Queue-load-0.45",
+      "arrival_rate": 0.45,
+      "channels": 4,
+      "modes": 4,
+      "queue_capacity": 4,
+      "hidden_width": 32,
+      "packet_rate": 1.0,
+      "jammer_to_noise": 18.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.05,
+      "adjacent_leakage": 0.5,
+      "queue_penalty": 0.12,
+      "drop_penalty": 0.6
+    },
+    {
+      "name": "Queue-load-0.70",
+      "arrival_rate": 0.7,
+      "channels": 4,
+      "modes": 4,
+      "queue_capacity": 4,
+      "hidden_width": 32,
+      "packet_rate": 1.0,
+      "jammer_to_noise": 18.0,
+      "rho_h": 0.75,
+      "switch_cost": 0.05,
+      "adjacent_leakage": 0.5,
+      "queue_penalty": 0.12,
+      "drop_penalty": 0.6
+    }
+  ],
+  "parameters_per_player": 452,
+  "software": {
+    "python": "3.8.12",
+    "numpy": "1.20.3",
+    "scipy": "1.7.3",
+    "torch": "1.11.0+cpu"
+  },
+  "elapsed_seconds": 129.72120904922485,
+  "completed_config_seed_pairs": 36,
+  "expected_config_seed_pairs": 36,
+  "failure_count": 0,
+  "maximum_br_residual": 7.105427357601002e-15
+}

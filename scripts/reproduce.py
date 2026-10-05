@@ -16,10 +16,12 @@ from typing import Dict, List, Optional, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
+RUN = EXPERIMENTS / "run"
+PLOT = EXPERIMENTS / "plot"
+TESTS = EXPERIMENTS / "tests"
 OUTPUTS = ROOT / "outputs"
-LOCKED = ROOT / "results" / "exogenous_ph_v1_20260813_tuned"
-ANALYSIS = ROOT / "results" / "theory_aligned_v1_20260813"
-STRESS_SEEDS = tuple(range(500, 512))
+RESULTS = ROOT / "results"
+QUEUE_SEEDS = tuple(range(600, 612))
 
 
 def timestamp() -> str:
@@ -57,8 +59,8 @@ def run(command: Sequence[str], records: List[Dict[str, object]], cwd: Path = RO
         raise RuntimeError("Command failed with exit code {}: {}".format(completed.returncode, command_text(command)))
 
 
-def python(script: str, *arguments: object) -> List[str]:
-    return [sys.executable, str(EXPERIMENTS / script), *[str(argument) for argument in arguments]]
+def python(script: Path, *arguments: object) -> List[str]:
+    return [sys.executable, str(script), *[str(argument) for argument in arguments]]
 
 
 def new_output(prefix: str, requested: Optional[Path]) -> Path:
@@ -84,16 +86,11 @@ def write_manifest(output: Path, mode: str, records: List[Dict[str, object]]) ->
 def reproduce_figures(requested: Optional[Path]) -> Path:
     output = new_output("figures", requested)
     records: List[Dict[str, object]] = []
-    run(python("plot_math_motivation.py", "--output", output), records)
-    run(
-        python(
-            "plot_theory_aligned_icc.py",
-            "--locked-root", LOCKED,
-            "--analysis-root", ANALYSIS,
-            "--output", output,
-        ),
-        records,
-    )
+    run(python(PLOT / "plot_math_motivation.py", "--output", output), records)
+    run(python(PLOT / "plot_queue_system_model.py"), records)
+    run(python(PLOT / "plot_queue_algorithm_framework.py"), records)
+    run(python(PLOT / "plot_queue_nominal_benchmark.py", "--input", RESULTS / "queue_nominal" / "queue_nominal_results.csv", "--output", output), records)
+    run(python(PLOT / "plot_queue_aware_results.py", "--input", RESULTS / "queue_aware" / "queue_results.csv", "--output", output), records)
     write_manifest(output, "figures", records)
     return output
 
@@ -107,13 +104,14 @@ def compile_papers(requested: Optional[Path]) -> Path:
     for source in ("ICC2027_submit.tex", "ICC2027_camera_ready.tex"):
         target = output / Path(source).stem
         target.mkdir()
-        shutil.copy2(ROOT / source, target / source)
+        shutil.copy2(ROOT / "ICC2027_submit.tex", target / "ICC2027_submit.tex")
+        shutil.copy2(ROOT / "ICC2027_camera_ready.tex", target / "ICC2027_camera_ready.tex")
         shutil.copy2(ROOT / "refs.bib", target / "refs.bib")
         shutil.copytree(ROOT / "figures", target / "figures")
-        locked_figures = target / "results" / "theory_aligned_v1_20260813" / "figures"
-        locked_figures.mkdir(parents=True)
-        for figure in ("neural_benchmark_theory.pdf", "wireless_stress_rate.pdf"):
-            shutil.copy2(ANALYSIS / "figures" / figure, locked_figures / figure)
+        locked_figures = target / "results"
+        locked_figures.mkdir()
+        for figure in ("queue_nominal_benchmark.pdf", "queue_load_results.pdf"):
+            shutil.copy2(RESULTS / figure, locked_figures / figure)
         run(
             [
                 latexmk,
@@ -133,11 +131,8 @@ def compile_papers(requested: Optional[Path]) -> Path:
 def smoke(requested: Optional[Path]) -> Path:
     output = new_output("smoke", requested)
     records: List[Dict[str, object]] = []
-    run(python("test_transition_model.py"), records)
-    run(python("run_hard_neural_benchmark.py", "--smoke", "--output", output / "population"), records)
-    run(python("run_trajectory_sampled_neural.py", "--phase", "smoke", "--output", output / "trajectory"), records)
-    run(python("run_oracle_quality_diagnostic.py", "--smoke", "--output", output / "oracle"), records)
-    run(python("run_neural_communication_stress.py", "--output", output / "stress", "--seeds", 500), records)
+    run(python(TESTS / "test_queue_transition_model.py"), records)
+    run(python(RUN / "run_queue_aware_stress.py", "--smoke", "--output", output / "queue_aware", "--seeds", 600), records)
     write_manifest(output, "smoke", records)
     return output
 
@@ -145,31 +140,14 @@ def smoke(requested: Optional[Path]) -> Path:
 def full(requested: Optional[Path]) -> Path:
     output = new_output("full", requested)
     records: List[Dict[str, object]] = []
-    population = output / "population"
-    analysis = output / "analysis"
-    run(python("test_transition_model.py"), records)
-    run(python("run_hard_neural_benchmark.py", "--output", population / "icc_neural_hard"), records)
-    run(python("run_trajectory_sampled_neural.py", "--phase", "formal", "--output", population / "icc_trajectory_sampled"), records)
-    run(
-        python(
-            "run_neural_communication_stress.py",
-            "--output", analysis / "icc_neural_stress_12seed",
-            "--seeds", *STRESS_SEEDS,
-        ),
-        records,
-    )
-    run(python("run_oracle_quality_diagnostic.py", "--output", analysis / "oracle_quality_v2"), records)
-    figure_output = output / "figures"
-    run(python("plot_math_motivation.py", "--output", figure_output), records)
-    run(
-        python(
-            "plot_theory_aligned_icc.py",
-            "--locked-root", population,
-            "--analysis-root", analysis,
-            "--output", figure_output,
-        ),
-        records,
-    )
+    nominal = output / "queue_nominal"
+    load_stress = output / "queue_aware"
+    run(python(TESTS / "test_queue_transition_model.py"), records)
+    run(python(RUN / "run_queue_nominal_benchmark.py", "--output", nominal, "--seeds", *QUEUE_SEEDS), records)
+    run(python(RUN / "run_queue_aware_stress.py", "--output", load_stress, "--seeds", *QUEUE_SEEDS), records)
+    run(python(PLOT / "plot_math_motivation.py", "--output", output), records)
+    run(python(PLOT / "plot_queue_nominal_benchmark.py", "--input", nominal / "queue_nominal_results.csv", "--output", output), records)
+    run(python(PLOT / "plot_queue_aware_results.py", "--input", load_stress / "queue_results.csv", "--output", output), records)
     write_manifest(output, "full", records)
     return output
 

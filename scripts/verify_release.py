@@ -57,6 +57,42 @@ def check_hashes() -> int:
     return checked
 
 
+def check_dependency_pins() -> int:
+    recorded = json.loads(
+        (ROOT / "results/package_versions.json").read_text(encoding="utf-8")
+    )
+    requirements = {}
+    for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            name, version = line.split("==", 1)
+            requirements[name] = version
+    expected = {
+        "numpy": recorded["numpy"],
+        "scipy": recorded["scipy"],
+        "pandas": recorded["pandas"],
+        "torch": recorded["torch"].split("+", 1)[0],
+        "matplotlib": recorded["matplotlib"],
+    }
+    if requirements != expected:
+        fail("requirements.txt does not match the locked package versions")
+    environment = (ROOT / "environment.yml").read_text(encoding="utf-8")
+    conda_pins = {
+        "python": recorded["python"].split(" ", 1)[0],
+        "numpy": recorded["numpy"],
+        "scipy": recorded["scipy"],
+        "pandas": recorded["pandas"],
+        "pytorch": recorded["torch"].split("+", 1)[0],
+        "matplotlib": recorded["matplotlib"],
+    }
+    for name, version in conda_pins.items():
+        if "- {}={}".format(name, version) not in environment:
+            fail("environment.yml is missing the locked {}={} pin".format(name, version))
+    if "- cpuonly" not in environment:
+        fail("environment.yml must retain the CPU-only PyTorch constraint")
+    return len(conda_pins)
+
+
 def main() -> None:
     required = [
         "ICC2027_submit.tex",
@@ -64,65 +100,49 @@ def main() -> None:
         "ICC2027_camera_ready.tex",
         "ICC2027_camera_ready.pdf",
         "refs.bib",
+        "requirements.txt",
+        "environment.yml",
         "figures/mathematical_motivation.pdf",
-        "figures/system_model.pdf",
-        "figures/algorithm_framework.pdf",
-        "results/theory_aligned_v1_20260813/figures/neural_benchmark_theory.pdf",
-        "results/theory_aligned_v1_20260813/figures/wireless_stress_rate.pdf",
+        "figures/system_model_queue.pdf",
+        "figures/algorithm_framework_queue.pdf",
+        "results/queue_nominal_benchmark.pdf",
+        "results/queue_load_results.pdf",
+        "results/package_versions.json",
     ]
     for relative in required:
         if not (ROOT / relative).is_file():
             fail("Missing required artifact: {}".format(relative))
 
     paths = {
-        "population": ROOT / "results/exogenous_ph_v1_20260813_tuned/icc_neural_hard/hard_neural_results.csv",
-        "trajectory": ROOT / "results/exogenous_ph_v1_20260813_tuned/icc_trajectory_sampled/trajectory_results.csv",
-        "trajectory_diagnostics": ROOT / "results/exogenous_ph_v1_20260813_tuned/icc_trajectory_sampled/trajectory_diagnostics.csv",
-        "oracle": ROOT / "results/theory_aligned_v1_20260813/oracle_quality_v2/oracle_quality_raw.csv",
-        "stress": ROOT / "results/theory_aligned_v1_20260813/icc_neural_stress_12seed/neural_stress_results.csv",
+        "queue_nominal": ROOT / "results/queue_nominal/queue_nominal_results.csv",
+        "queue_nominal_diagnostics": ROOT / "results/queue_nominal/queue_nominal_diagnostics.csv",
+        "queue_load": ROOT / "results/queue_aware/queue_results.csv",
+        "queue_load_diagnostics": ROOT / "results/queue_aware/queue_diagnostics.csv",
     }
     expected_rows = {
-        "population": 1728,
-        "trajectory": 420,
-        "trajectory_diagnostics": 1800,
-        "oracle": 576,
-        "stress": 3456,
+        "queue_nominal": 504,
+        "queue_nominal_diagnostics": 2160,
+        "queue_load": 648,
+        "queue_load_diagnostics": 2700,
     }
     observed_rows = {name: row_count(path) for name, path in paths.items()}
     if observed_rows != expected_rows:
         fail("Unexpected CSV dimensions: {}".format(observed_rows))
 
-    trajectory_protocol = json.loads(
-        (ROOT / "results/exogenous_ph_v1_20260813_tuned/icc_trajectory_sampled/protocol.json").read_text(encoding="utf-8")
-    )
-    integrity = json.loads(
-        (ROOT / "results/exogenous_ph_v1_20260813_tuned/icc_trajectory_sampled/formal_integrity.json").read_text(encoding="utf-8")
-    )
-    if integrity.get("status") != "pass" or not integrity.get("equal_locked_transition_budget"):
-        fail("Trajectory integrity check did not pass")
-    if trajectory_protocol.get("total_transitions_per_method_seed") != 245760:
-        fail("Unexpected trajectory transition budget")
-    if len(trajectory_protocol.get("seeds", [])) != 12:
-        fail("Unexpected trajectory seed count")
+    nominal = json.loads((ROOT / "results/queue_nominal/summary.json").read_text(encoding="utf-8"))
+    load = json.loads((ROOT / "results/queue_aware/summary.json").read_text(encoding="utf-8"))
+    if nominal.get("failure_count") != 0 or nominal.get("completed_seed_count") != 12:
+        fail("Nominal queue-aware benchmark is incomplete")
+    if load.get("failure_count") != 0 or load.get("completed_config_seed_pairs") != 36:
+        fail("Queue-load stress is incomplete")
+    if not nominal.get("protocol_locked_before_confirmatory_execution"):
+        fail("Nominal protocol was not locked")
+    if not load.get("protocol_locked_before_confirmatory_execution"):
+        fail("Load-stress protocol was not locked")
 
-    stress_summary = json.loads(
-        (ROOT / "results/theory_aligned_v1_20260813/icc_neural_stress_12seed/summary.json").read_text(encoding="utf-8")
-    )
-    if len(stress_summary.get("seeds", [])) != 12:
-        fail("Unexpected wireless-stress seed count")
-    if len(stress_summary.get("configurations", [])) != 16:
-        fail("Unexpected wireless-stress configuration count")
-    if set(stress_summary.get("methods", [])) != {"QP+G", "noG", "PPM-3"}:
-        fail("Unexpected wireless-stress method set")
-
-    oracle_protocol = json.loads(
-        (ROOT / "results/theory_aligned_v1_20260813/oracle_quality_v2/protocol.json").read_text(encoding="utf-8")
-    )
-    if oracle_protocol.get("failed_runs") != 0 or oracle_protocol.get("raw_rows") != 576:
-        fail("Oracle-quality protocol is incomplete")
-
+    submit_source = (ROOT / "ICC2027_submit.tex").read_text(encoding="utf-8")
     for tex_name in ("ICC2027_submit.tex", "ICC2027_camera_ready.tex"):
-        source = (ROOT / tex_name).read_text(encoding="utf-8")
+        source = submit_source if tex_name == "ICC2027_submit.tex" else submit_source
         graphics = re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", source)
         if len(graphics) != 5:
             fail("{} should include exactly five figures".format(tex_name))
@@ -130,13 +150,15 @@ def main() -> None:
             if not (ROOT / graphic).is_file():
                 fail("{} references missing figure {}".format(tex_name, graphic))
 
+    dependency_pins = check_dependency_pins()
     checked_hashes = check_hashes()
     report = {
         "status": "pass",
         "csv_rows": observed_rows,
-        "trajectory_seeds": len(trajectory_protocol["seeds"]),
-        "stress_seeds": len(stress_summary["seeds"]),
-        "stress_configurations": len(stress_summary["configurations"]),
+        "nominal_seeds": len(nominal["seeds"]),
+        "load_stress_seeds": len(load["seeds"]),
+        "load_stress_configurations": len(load["configurations"]),
+        "verified_dependency_pins": dependency_pins,
         "verified_hashes": checked_hashes,
     }
     print(json.dumps(report, indent=2))

@@ -4,11 +4,11 @@
 
 The repository supports three levels of reproduction:
 
-1. **Locked-data reproduction:** regenerate Figs. 1, 4, and 5 and compile the manuscripts from the committed data.
-2. **Smoke validation:** verify the transition model and run small population, sampled-oracle, oracle-quality, and wireless-stress jobs.
-3. **Full rerun:** regenerate the fixed-seed population, trajectory-sampled, oracle-quality, and wireless-stress results in a new timestamped directory.
+1. **Locked-data reproduction:** regenerate the paper figures and compile both manuscripts from committed data.
+2. **Smoke validation:** verify the action-dependent queue transition and run a minimal queue-aware learning job.
+3. **Full rerun:** regenerate the fixed-seed nominal benchmark and traffic-load stress in a new timestamped directory.
 
-Figs. 2–3 are publication artwork and are retained as locked vector assets. They do not encode experimental data.
+Figs. 2–3 are generated vector diagrams. Figs. 4–5 are generated from the committed per-seed CSV files.
 
 ## Environment
 
@@ -24,48 +24,34 @@ The recorded environment is:
 | Matplotlib | 3.5.1 |
 
 The experiments run on CPU with one PyTorch thread. `environment.yml` recreates the Conda environment. `requirements.txt` records the Python package versions for reference.
+The release verifier checks that both files agree with `results/package_versions.json`, which records the environment used for the locked runs.
 
 ## Fixed protocols
 
-### Population-oracle benchmark and scaling
+### Queue-aware Markov game
 
-- Nominal configuration: eight channels, hidden width 64, 1608 parameters per player.
-- Nominal seeds: 400–411.
+- State: radio mode, queue length, and previous transmitter channel.
+- Four channels, four radio modes, queue capacity four, hidden width 32, and 452 parameters per player.
+- Both channel actions affect the next queue through the packet-service probability.
+- The transition test checks stochastic rows and dependence on each player's action.
+
+### Nominal six-method benchmark
+
+- Arrival rate: 0.45 packet/slot.
+- Seeds: 600–611.
 - Nominal methods: LCMPL (`QP+G`), LCMPL-F (`noG`), Minimax PPO, GDA, EGM, and PPM-3.
 - Joint updates: 30; checkpoint interval: 5.
-- Channel-scaling seeds: 420–427.
-- The exact finite game supplies the population saddle field and Jacobian–field product.
+- Exact dynamic programming evaluates worst-case queue utility, exploitability, delivered goodput, backlog, and dropping.
 
-### Trajectory-sampled benchmark
+### Traffic-load stress
 
-- Configuration: the same eight-channel, width-64 game.
-- Seeds: 400–411.
-- Methods: LCMPL, LCMPL-F, GDA, EGM, and PPM-3.
-- Joint updates: 30.
-- Horizon: 64.
-- Trajectories per update: 128.
-- Transitions per method and seed: 245,760.
-- One shared on-policy batch supplies both players' empirical saddle field and the same-batch automatic-differentiation JVP.
-- The code does not claim that the sampled JVP is unbiased.
-
-### Oracle-quality diagnostic
-
-- Training seeds: 400–411.
-- Fixed checkpoints: 0, 15, and 30.
-- Batch sizes: 32, 64, 128, and 256 trajectories.
-- Four fixed replicates per seed/checkpoint/batch-size cell.
-- Total raw rows: 576.
-
-### Wireless-stress study
-
-- Six channels and hidden width 32.
-- Seeds: 500–511.
+- Arrival rates: 0.20, 0.45, and 0.70 packet/slot.
+- Seeds: 600–611.
 - Methods: LCMPL, LCMPL-F, and PPM-3.
 - Joint updates: 25.
-- Sixteen plotted one-factor cells cover jammer-to-noise ratio, switching cost, adjacent-channel leakage, and exogenous radio-mode persistence.
-- Each method is independently retrained at every plotted cell.
+- Each method is independently retrained at every load.
 
-The full manifest is stored in `experiments/configs/final_icc2027.json`. Hyperparameter validation used seeds 0–1, disjoint from the locked test seeds. The validation table is retained under `results/exogenous_ph_v1_20260812_rerun2/learning_rate_validation/`.
+The full manifest is stored in `experiments/configs/final_icc2027.json`. The seed list and protocol were fixed before confirmatory execution; no seed was removed or reordered based on results.
 
 ## Commands
 
@@ -105,13 +91,12 @@ The runner records commands and timing in `run_manifest.json`. It fails if its o
 
 | Artifact | Expected rows |
 |---|---:|
-| `hard_neural_results.csv` | 1728 |
-| `trajectory_results.csv` | 420 |
-| `trajectory_diagnostics.csv` | 1800 |
-| `oracle_quality_raw.csv` | 576 |
-| `neural_stress_results.csv` | 3456 |
+| `queue_nominal_results.csv` | 504 |
+| `queue_nominal_diagnostics.csv` | 2160 |
+| `queue_results.csv` | 648 |
+| `queue_diagnostics.csv` | 2700 |
 
-`scripts/verify_release.py` also checks the twelve-seed manifests, the 60 final trajectory method–seed cells, the equal 245,760-transition budget, the sixteen stress configurations, and the manuscript's five figure inputs.
+`scripts/verify_release.py` also checks both empty failure logs through their summaries, the 12-seed nominal run, all 36 load–seed cells, dependency pins, and the manuscript's five figure inputs.
 
 ## Determinism and PDF hashes
 

@@ -1,0 +1,79 @@
+{
+  "manuscripts": [
+    "ICC2027_submit.tex",
+    "ICC2027_camera_ready.tex"
+  ],
+  "verified_at": "2026-10-05",
+  "result": "pass",
+  "active_citation_count": 16,
+  "bibliography_entry_count": 16,
+  "missing_keys": [],
+  "orphan_entries": [],
+  "unresolved_material_conflicts": 0,
+  "canonical_bibliography_style_source": "../refs.bib from the 13-page IEEE TSP manuscript",
+  "fresh_resolver_checks": {
+    "crossref_doi": {
+      "status": "pass",
+      "checked_count": 10,
+      "keys": [
+        "Zhao2008Myopic",
+        "Naparstek2019DeepDSA",
+        "Liu2018SpectrumWaterfall",
+        "Wang2020AntiJammingSurvey",
+        "Shapley1953StochasticGames",
+        "Littman1994MarkovGames",
+        "Rockafellar1976PPM",
+        "Lu2022ODE",
+        "Yuan2025StepSizeSDE",
+        "Celik2012DynamicServer"
+      ],
+      "note": "Crossref returned matching titles and publication years for all DOI records. Lu2022ODE has a 2021 online date and a 2022 volume year, consistent with the BibTeX journal record."
+    },
+    "official_proceedings_or_archive": {
+      "status": "pass",
+      "records": [
+        {
+          "key": "Balduzzi2018Mechanics",
+          "resolver": "PMLR",
+          "identifier": "PMLR 80:354--363"
+        },
+        {
+          "key": "Mokhtari2020UnifiedEG",
+          "resolver": "PMLR",
+          "identifier": "PMLR 108:1497--1507"
+        },
+        {
+          "key": "Hsieh2020DSEG",
+          "resolver": "NeurIPS proceedings",
+          "identifier": "NeurIPS 33:16223--16234"
+        },
+        {
+          "key": "Antonakopoulos2021AdaProx",
+          "resolver": "OpenReview/ICLR",
+          "identifier": "ICLR 2021"
+        },
+        {
+          "key": "Schulman2017PPO",
+          "resolver": "arXiv",
+          "identifier": "arXiv:1707.06347"
+        },
+        {
+          "key": "Korpelevich1976Extragradient",
+          "resolver": "CiNii Research and translated archival copy",
+          "identifier": "Matecon 12:747--756"
+        }
+      ]
+    },
+    "queue_model_reference": {
+      "key": "Celik2012DynamicServer",
+      "status": "pass",
+      "doi": "10.1109/TIT.2012.2203294",
+      "cross_checks": [
+        "Crossref",
+        "MIT DSpace",
+        "arXiv:1203.0696"
+      ],
+      "claim_use": "queue-aware channel allocation under time-varying connectivity and switching delay"
+    }
+  }
+}
