@@ -15,12 +15,12 @@ import numpy as np
 import scipy
 import torch
 
-from run_queue_aware_stress import QueueGameSpec, run_configuration, write_csv
+from run_queue_aware_stress import QueueGameSpec, manifest as common_manifest, run_configuration, write_csv
 
 
-MODEL_VERSION = "queue-aware-dsa-nominal-v1"
-SEEDS = tuple(range(600, 612))
-STEPS = 30
+MODEL_VERSION = "queue-aware-dsa-nominal-v2"
+SEEDS = tuple(range(800, 812))
+STEPS = 60
 ARRIVAL_RATE = 0.45
 METHODS = ("QP+G", "noG", "Minimax-PPO", "GDA", "EGM", "PPM-3")
 CHECKPOINT_EVERY = 5
@@ -38,6 +38,10 @@ def run(output: Path, seeds: Sequence[int], steps: int) -> None:
         "joint_updates": steps,
         "checkpoint_every": CHECKPOINT_EVERY,
         "configuration": spec.__dict__,
+        "arrival_process": "independent Bernoulli arrivals in every slot",
+        "service_process": "Bernoulli service whose probability depends on both channel actions",
+        "joint_action_dependent_transition": True,
+        "algorithm_parameters": common_manifest(seeds, steps, (ARRIVAL_RATE,))["algorithm_parameters"],
         "software": {
             "python": platform.python_version(),
             "numpy": np.__version__,

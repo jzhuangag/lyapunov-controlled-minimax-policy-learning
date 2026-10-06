@@ -108,6 +108,8 @@ def main() -> None:
         "results/queue_nominal_benchmark.pdf",
         "results/queue_load_results.pdf",
         "results/package_versions.json",
+        "results/validation/queue_step_selection.json",
+        "experiments/run/run_neural_scale_game.py",
     ]
     for relative in required:
         if not (ROOT / relative).is_file():
@@ -120,10 +122,10 @@ def main() -> None:
         "queue_load_diagnostics": ROOT / "results/queue_aware/queue_diagnostics.csv",
     }
     expected_rows = {
-        "queue_nominal": 504,
-        "queue_nominal_diagnostics": 2160,
-        "queue_load": 648,
-        "queue_load_diagnostics": 2700,
+        "queue_nominal": 936,
+        "queue_nominal_diagnostics": 4320,
+        "queue_load": 2340,
+        "queue_load_diagnostics": 10800,
     }
     observed_rows = {name: row_count(path) for name, path in paths.items()}
     if observed_rows != expected_rows:

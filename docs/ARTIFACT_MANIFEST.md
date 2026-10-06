@@ -21,6 +21,7 @@
 - Fig. 4(a)–(d): `results/queue_nominal/queue_nominal_results.csv`.
 - Fig. 5(a)–(d): `results/queue_aware/queue_results.csv`.
 - Curvature-activation claims: `results/queue_aware/queue_diagnostics.csv`.
+- Classical-baseline step-size selection: `results/validation/queue_step_selection.json`.
 - Locked seeds, configurations, failures, and software versions: the `manifest.json`, `summary.json`, and `failures.jsonl` files beside each result table.
 
 The repository omits caches, temporary builds, partial CSV duplicates, historical drafts, internal review notes, failed pilot runs, and third-party paper PDFs because none is required to reproduce the reported manuscript.

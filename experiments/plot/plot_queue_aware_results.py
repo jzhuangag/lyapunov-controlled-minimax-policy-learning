@@ -23,16 +23,17 @@ plt.rcParams.update(
 )
 
 
-METHODS = ("QP+G", "noG", "PPM-3")
-LABELS = {"QP+G": "LCMPL", "noG": "LCMPL-F", "PPM-3": "PPM-3"}
-COLORS = {"QP+G": "#111111", "noG": "#009E9A", "PPM-3": "#B24AA7"}
-MARKERS = {"QP+G": "o", "noG": "s", "PPM-3": "^"}
-LOAD_LABELS = {0.20: "light", 0.45: "moderate", 0.70: "near-cap."}
+METHODS = ("QP+G", "noG", "GDA", "EGM", "PPM-3")
+LABELS = {"QP+G": "LCMPL", "noG": "LCMPL-F", "GDA": "GDA", "EGM": "EGM", "PPM-3": "PPM-3"}
+COLORS = {"QP+G": "#111111", "noG": "#009E9A", "GDA": "#EE7733", "EGM": "#0077BB", "PPM-3": "#B24AA7"}
+MARKERS = {"QP+G": "o", "noG": "s", "GDA": "^", "EGM": "v", "PPM-3": "D"}
+LINESTYLES = {"QP+G": "-", "noG": "--", "GDA": ":", "EGM": "-.", "PPM-3": (0, (3, 1, 1, 1))}
+LOAD_LABELS = {0.20: "light", 0.45: "moderate", 0.70: "heavy"}
 METRICS = (
-    ("robust_rate", "worst-case utility", "(a) Queue-aware utility", 1.0),
-    ("br_goodput", "goodput (packet/slot)", "(b) Delivered goodput", 1.0),
-    ("br_backlog", "average backlog (packet)", "(c) Queue backlog", -1.0),
-    ("br_drop_probability", "drop probability", "(d) Packet dropping", -1.0),
+    ("robust_rate", "utility gain", "(a) Queue-aware utility", 1.0),
+    ("br_goodput", "goodput gain (packet/slot)", "(b) Delivered goodput", 1.0),
+    ("br_backlog", "backlog reduction (packet)", "(c) Queue backlog", -1.0),
+    ("br_drop_probability", "drop-probability reduction", "(d) Packet dropping", -1.0),
 )
 
 
@@ -75,14 +76,16 @@ def plot(input_csv: Path, output_dir: Path) -> None:
     selected = data[data["step"] == data["step"].max()].copy()
     loads = sorted(float(value) for value in selected["arrival_rate"].unique())
     fig, axes = plt.subplots(1, 4, figsize=(7.16, 1.88), constrained_layout=True)
-    for axis, (metric, ylabel, title, _) in zip(axes, METRICS):
+    for axis, (metric, ylabel, title, direction) in zip(axes, METRICS):
         for method in METHODS:
             means: List[float] = []
             errors: List[float] = []
             for load in loads:
-                values = selected[
-                    (selected["arrival_rate"] == load) & (selected["method"] == method)
-                ][metric].to_numpy(dtype=float)
+                load_data = selected[selected["arrival_rate"] == load].set_index(["seed", "method"])
+                values = direction * (
+                    load_data.xs(method, level="method")[metric]
+                    - load_data.xs("noG", level="method")[metric]
+                ).to_numpy(dtype=float)
                 mean, half = mean_ci(values)
                 means.append(mean)
                 errors.append(half)
@@ -91,6 +94,7 @@ def plot(input_csv: Path, output_dir: Path) -> None:
                 means,
                 yerr=errors,
                 color=COLORS[method],
+                linestyle=LINESTYLES[method],
                 marker=MARKERS[method],
                 markersize=3.2,
                 linewidth=1.15,
@@ -100,6 +104,7 @@ def plot(input_csv: Path, output_dir: Path) -> None:
         axis.set_xticks(loads, [LOAD_LABELS[round(load, 2)] for load in loads])
         axis.tick_params(axis="x", labelrotation=0, labelsize=6.6)
         axis.tick_params(axis="y", labelsize=6.8)
+        axis.axhline(0.0, color="#777777", linewidth=0.6, alpha=0.7)
         axis.grid(True, alpha=0.25, linewidth=0.5)
         axis.set_ylabel(ylabel, fontsize=7.3)
         axis.set_title(title, fontsize=7.8, y=-0.36)
@@ -109,7 +114,7 @@ def plot(input_csv: Path, output_dir: Path) -> None:
         handles,
         labels,
         loc="upper center",
-        ncol=3,
+        ncol=5,
         frameon=False,
         bbox_to_anchor=(0.5, 1.08),
         fontsize=7.5,
@@ -139,7 +144,8 @@ def plot(input_csv: Path, output_dir: Path) -> None:
     paired = [
         paired_record(selected, load, comparator, metric, direction)
         for load in loads
-        for comparator in ("noG", "PPM-3")
+        for comparator in METHODS
+        if comparator != "QP+G"
         for metric, _, _, direction in METRICS
     ]
     statistics = {

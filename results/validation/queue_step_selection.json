@@ -1,0 +1,107 @@
+{
+  "selection_rule": "maximize final mean worst-case utility on disjoint validation seeds; break exact ties by lower exploitability",
+  "validation_seeds": [
+    100,
+    101,
+    102,
+    103
+  ],
+  "formal_test_seeds": [
+    800,
+    801,
+    802,
+    803,
+    804,
+    805,
+    806,
+    807,
+    808,
+    809,
+    810,
+    811
+  ],
+  "joint_updates": 60,
+  "grid": [
+    0.01,
+    0.04,
+    0.08,
+    0.16
+  ],
+  "methods": {
+    "GDA": {
+      "selected_step_size": 0.16,
+      "candidates": [
+        {
+          "step_size": 0.01,
+          "mean_worst_case_utility": -0.27370225123922953,
+          "mean_exploitability": 0.40534752561060916
+        },
+        {
+          "step_size": 0.04,
+          "mean_worst_case_utility": -0.25891475177683254,
+          "mean_exploitability": 0.3793206644035857
+        },
+        {
+          "step_size": 0.08,
+          "mean_worst_case_utility": -0.24613505479523848,
+          "mean_exploitability": 0.34001879563412707
+        },
+        {
+          "step_size": 0.16,
+          "mean_worst_case_utility": -0.2397500963619256,
+          "mean_exploitability": 0.2866810290456386
+        }
+      ]
+    },
+    "EGM": {
+      "selected_step_size": 0.16,
+      "candidates": [
+        {
+          "step_size": 0.01,
+          "mean_worst_case_utility": -0.27369603164122913,
+          "mean_exploitability": 0.4053252633462037
+        },
+        {
+          "step_size": 0.04,
+          "mean_worst_case_utility": -0.25882319430300993,
+          "mean_exploitability": 0.37897299284846375
+        },
+        {
+          "step_size": 0.08,
+          "mean_worst_case_utility": -0.24582064580976107,
+          "mean_exploitability": 0.3388728130101801
+        },
+        {
+          "step_size": 0.16,
+          "mean_worst_case_utility": -0.23880335576726472,
+          "mean_exploitability": 0.2837808745340229
+        }
+      ]
+    },
+    "PPM-3": {
+      "selected_step_size": 0.16,
+      "candidates": [
+        {
+          "step_size": 0.01,
+          "mean_worst_case_utility": -0.2736960349334963,
+          "mean_exploitability": 0.4053252632982819
+        },
+        {
+          "step_size": 0.04,
+          "mean_worst_case_utility": -0.25882314064612205,
+          "mean_exploitability": 0.37897321949622065
+        },
+        {
+          "step_size": 0.08,
+          "mean_worst_case_utility": -0.24581930184791148,
+          "mean_exploitability": 0.3388748190180858
+        },
+        {
+          "step_size": 0.16,
+          "mean_worst_case_utility": -0.23879658322251657,
+          "mean_exploitability": 0.28377037229556357
+        }
+      ]
+    }
+  }
+}

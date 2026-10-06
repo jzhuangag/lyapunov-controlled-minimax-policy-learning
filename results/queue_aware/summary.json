@@ -1,27 +1,29 @@
 {
-  "model_version": "queue-aware-dsa-v1",
+  "model_version": "queue-aware-dsa-v2",
   "protocol_locked_before_confirmatory_execution": true,
   "seed_selection": "fixed queue-aware seeds; no outcome-based filtering or reordering",
   "seeds": [
-    600,
-    601,
-    602,
-    603,
-    604,
-    605,
-    606,
-    607,
-    608,
-    609,
-    610,
-    611
+    800,
+    801,
+    802,
+    803,
+    804,
+    805,
+    806,
+    807,
+    808,
+    809,
+    810,
+    811
   ],
   "methods": [
     "QP+G",
     "noG",
+    "GDA",
+    "EGM",
     "PPM-3"
   ],
-  "joint_updates": 25,
+  "joint_updates": 60,
   "checkpoint_every": 5,
   "state": [
     "radio_mode",
@@ -47,7 +49,7 @@
       "queue_capacity": 4,
       "hidden_width": 32,
       "packet_rate": 1.0,
-      "jammer_to_noise": 18.0,
+      "jammer_to_noise": 30.0,
       "rho_h": 0.75,
       "switch_cost": 0.05,
       "adjacent_leakage": 0.5,
@@ -62,7 +64,7 @@
       "queue_capacity": 4,
       "hidden_width": 32,
       "packet_rate": 1.0,
-      "jammer_to_noise": 18.0,
+      "jammer_to_noise": 30.0,
       "rho_h": 0.75,
       "switch_cost": 0.05,
       "adjacent_leakage": 0.5,
@@ -77,7 +79,7 @@
       "queue_capacity": 4,
       "hidden_width": 32,
       "packet_rate": 1.0,
-      "jammer_to_noise": 18.0,
+      "jammer_to_noise": 30.0,
       "rho_h": 0.75,
       "switch_cost": 0.05,
       "adjacent_leakage": 0.5,
@@ -86,15 +88,28 @@
     }
   ],
   "parameters_per_player": 452,
+  "algorithm_parameters": {
+    "discount_factor": 0.95,
+    "entropy_regularization": 0.02,
+    "LCMPL_beta_cap": 0.16,
+    "LCMPL_gamma_cap": 0.12,
+    "LCMPL_backtracking_limit": 8,
+    "LCMPL_merit_gap_weight": 0.35,
+    "LCMPL_merit_deficiency_weight": 1.5,
+    "fixed_step_GDA_EGM_PPM3": 0.16,
+    "Minimax_PPO_step": 0.001,
+    "Minimax_PPO_clip": 0.2,
+    "Minimax_PPO_epochs": 3
+  },
   "software": {
     "python": "3.8.12",
     "numpy": "1.20.3",
     "scipy": "1.7.3",
     "torch": "1.11.0+cpu"
   },
-  "elapsed_seconds": 129.72120904922485,
+  "elapsed_seconds": 462.8928108215332,
   "completed_config_seed_pairs": 36,
   "expected_config_seed_pairs": 36,
   "failure_count": 0,
-  "maximum_br_residual": 7.105427357601002e-15
+  "maximum_br_residual": 1.2434497875801753e-14
 }

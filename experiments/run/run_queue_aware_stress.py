@@ -25,8 +25,16 @@ import scipy
 import torch
 
 from run_neural_scale_game import (
+    BACKTRACKS,
+    BETA_CAP,
     DISCOUNT,
+    ENTROPY_TAU,
     FIXED_LEARNING_RATE,
+    MERIT_DEFICIENCY_WEIGHT,
+    MERIT_GAP_WEIGHT,
+    PPO_CLIP,
+    PPO_EPOCHS,
+    PPO_LEARNING_RATE,
     Game,
     adaptive_update,
     classical_update,
@@ -37,18 +45,18 @@ from run_neural_scale_game import (
 )
 
 
-MODEL_VERSION = "queue-aware-dsa-v1"
+MODEL_VERSION = "queue-aware-dsa-v2"
 CHANNELS = 4
 MODES = 4
 QUEUE_CAPACITY = 4
 HIDDEN_WIDTH = 32
 ARRIVAL_RATES = (0.20, 0.45, 0.70)
-SEEDS = tuple(range(600, 612))
-STEPS = 25
-METHODS = ("QP+G", "noG", "PPM-3")
+SEEDS = tuple(range(800, 812))
+STEPS = 60
+METHODS = ("QP+G", "noG", "GDA", "EGM", "PPM-3")
 CHECKPOINT_EVERY = 5
 PACKET_RATE = 1.0
-JAMMER_TO_NOISE = 18.0
+JAMMER_TO_NOISE = 30.0
 MODE_PERSISTENCE = 0.75
 SWITCH_COST = 0.05
 ADJACENT_LEAKAGE = 0.50
@@ -400,6 +408,19 @@ def manifest(seeds: Sequence[int], steps: int, arrival_rates: Sequence[float]) -
         ],
         "configurations": [asdict(spec) for spec in specs],
         "parameters_per_player": queue_parameter_count(specs[0]),
+        "algorithm_parameters": {
+            "discount_factor": DISCOUNT,
+            "entropy_regularization": ENTROPY_TAU,
+            "LCMPL_beta_cap": BETA_CAP,
+            "LCMPL_gamma_cap": 0.12,
+            "LCMPL_backtracking_limit": BACKTRACKS,
+            "LCMPL_merit_gap_weight": MERIT_GAP_WEIGHT,
+            "LCMPL_merit_deficiency_weight": MERIT_DEFICIENCY_WEIGHT,
+            "fixed_step_GDA_EGM_PPM3": FIXED_LEARNING_RATE,
+            "Minimax_PPO_step": PPO_LEARNING_RATE,
+            "Minimax_PPO_clip": PPO_CLIP,
+            "Minimax_PPO_epochs": PPO_EPOCHS,
+        },
         "software": {
             "python": platform.python_version(),
             "numpy": np.__version__,

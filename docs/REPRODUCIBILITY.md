@@ -32,26 +32,27 @@ The release verifier checks that both files agree with `results/package_versions
 
 - State: radio mode, queue length, and previous transmitter channel.
 - Four channels, four radio modes, queue capacity four, hidden width 32, and 452 parameters per player.
-- Both channel actions affect the next queue through the packet-service probability.
+- Every slot has an independent Bernoulli arrival; service is Bernoulli with a probability controlled by both channel actions.
+- Both channel actions therefore affect the stochastic next-queue distribution.
 - The transition test checks stochastic rows and dependence on each player's action.
 
 ### Nominal six-method benchmark
 
 - Arrival rate: 0.45 packet/slot.
-- Seeds: 600–611.
+- Seeds: 800–811.
 - Nominal methods: LCMPL (`QP+G`), LCMPL-F (`noG`), Minimax PPO, GDA, EGM, and PPM-3.
-- Joint updates: 30; checkpoint interval: 5.
+- Joint updates: 60; checkpoint interval: 5.
 - Exact dynamic programming evaluates worst-case queue utility, exploitability, delivered goodput, backlog, and dropping.
 
 ### Traffic-load stress
 
 - Arrival rates: 0.20, 0.45, and 0.70 packet/slot.
-- Seeds: 600–611.
-- Methods: LCMPL, LCMPL-F, and PPM-3.
-- Joint updates: 25.
+- Seeds: 800–811.
+- Methods: LCMPL, LCMPL-F, GDA, EGM, and PPM-3.
+- Joint updates: 60.
 - Each method is independently retrained at every load.
 
-The full manifest is stored in `experiments/configs/final_icc2027.json`. The seed list and protocol were fixed before confirmatory execution; no seed was removed or reordered based on results.
+The radio configuration uses jammer-to-noise ratio 30. LCMPL uses step-size box `[0,0.16] × [0,0.12]`, eight backtracking trials, and merit weights `(0.35,1.5)`. On disjoint validation seeds 100–103, GDA, EGM, and PPM-3 select step size 0.16 from `{0.01,0.04,0.08,0.16}`; Minimax PPO uses step size 0.001, clip 0.2, and three epochs. The full manifest is stored in `experiments/configs/final_icc2027.json`; no test seed was removed or reordered based on results.
 
 ## Commands
 
@@ -91,10 +92,10 @@ The runner records commands and timing in `run_manifest.json`. It fails if its o
 
 | Artifact | Expected rows |
 |---|---:|
-| `queue_nominal_results.csv` | 504 |
-| `queue_nominal_diagnostics.csv` | 2160 |
-| `queue_results.csv` | 648 |
-| `queue_diagnostics.csv` | 2700 |
+| `queue_nominal_results.csv` | 936 |
+| `queue_nominal_diagnostics.csv` | 4320 |
+| `queue_results.csv` | 2340 |
+| `queue_diagnostics.csv` | 10800 |
 
 `scripts/verify_release.py` also checks both empty failure logs through their summaries, the 12-seed nominal run, all 36 load–seed cells, dependency pins, and the manuscript's five figure inputs.
 

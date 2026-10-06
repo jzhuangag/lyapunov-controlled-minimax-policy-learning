@@ -30,7 +30,7 @@
 \ifdefined\cameraready
 \newcommand{\widefigwidth}{0.78\textwidth}
 \else
-\newcommand{\widefigwidth}{0.98\textwidth}
+\newcommand{\widefigwidth}{0.97\textwidth}
 \fi
 \newtheorem{assumption}{Assumption}
 \newtheorem{proposition}{Proposition}
@@ -62,7 +62,7 @@ LCMPL combines the simultaneous policy-gradient field with a Jacobian--field cor
 A curvature identity characterizes when the correction dissipates rotational saddle-field energy.
 Under local smoothness, geometric coverage, and bounded learning and local-model errors, the time-averaged expected stationarity residual has an $O(1/K)$ transient plus an explicit residual term over $K$ joint updates.
 A local policy-gap condition further converts this result into a bound on the transmitter's worst-case queue-aware utility loss.
-Experiments show improved worst-case utility and exploitability over representative minimax learners; load sweeps further show that selective curvature control yields higher goodput and lower backlog near capacity.
+Experiments show statistically resolved improvements over the field-only ablation in worst-case utility, exploitability, goodput, and backlog; load sweeps further show that these gains grow under heavier traffic.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -103,7 +103,7 @@ In this paper, we propose Lyapunov-Controlled Minimax Policy Learning (LCMPL).
 Following Lyapunov-drift step-size control \cite{Yuan2025StepSizeSDE}, LCMPL assigns separate step sizes to the field and Jacobian--field directions and selects them through a two-variable quadratic program (QP) that predicts local merit decrease.
 The merit connects policy stationarity with worst-case queue-aware communication utility, while a same-state utility test rejects detrimental curvature.
 We establish an $O(1/K)$ stationarity transient with an explicit learning-error residual and, under a local policy-gap condition, a worst-case utility bound.
-Queue-aware experiments compare LCMPL with representative simultaneous-gradient, extragradient, implicit-update, and clipped-policy baselines and examine how the gain changes from light to near-capacity traffic.
+Queue-aware experiments compare LCMPL with representative simultaneous-gradient, extragradient, implicit-update, and clipped-policy baselines and examine how its field--curvature gain changes from light to heavy traffic.
 
 \section{Adversarial DSA System and Markov-Game Model}
 \subsection{Queue-Aware Wireless Interaction}
@@ -461,7 +461,7 @@ The last term is the entropy-regularization error.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\widefigwidth]{results/queue_load_results.pdf}
-\caption{Traffic-load stress over 12 seeds. Error bars are 95\% confidence intervals; light, moderate, and near-capacity loads use $\lambda_A=0.20$, $0.45$, and $0.70$.}
+\caption{Paired gains over LCMPL-F under traffic-load stress. Positive values favor the displayed method; error bars are 95\% confidence intervals over 12 seeds. Light, moderate, and heavy loads use $\lambda_A=0.20$, $0.45$, and $0.70$.}
 \label{fig:queue_load}
 \end{figure*}
 
@@ -473,22 +473,17 @@ The nominal benchmark compares GDA~\cite{Mokhtari2020UnifiedEG}, the extragradie
 Appendix~\ref{app:reproducibility} reports the complete protocol.
 
 \subsection{Neural Learning Dynamics and Policy Quality}
-The nominal study asks whether curvature selection improves both the training dynamics and the communication quality of the learned neural policies under moderate traffic.
-Fig.~\ref{fig:queue_nominal}(a)--(b) show the convergence of worst-case utility and exploitability over 30 joint neural-policy updates, while Fig.~\ref{fig:queue_nominal}(c)--(d) report final goodput and backlog.
-LCMPL simultaneously raises worst-case utility and reduces exploitability.
-Relative to LCMPL-F, its paired mean utility gain is $0.0024$ (95\% confidence interval $[0.0001,0.0047]$), while exploitability decreases by $0.0039$ ($[0.0007,0.0071]$).
-The same accepted policies increase delivered goodput by $0.0012$ packet/slot ($[0.0001,0.0024]$) and reduce backlog by $0.0066$ packet ($[0.0006,0.0126]$).
-Against GDA, EGM, and PPM-3, LCMPL gains about $0.0431$ in utility and $0.0198$ packet/slot in goodput while reducing backlog by $0.1138$ packet; every paired 95\% interval excludes zero.
-Fig.~\ref{fig:queue_nominal}(c) and Fig.~\ref{fig:queue_nominal}(d) therefore connect saddle stabilization to packet delivery rather than only to an optimization residual.
+The nominal study asks whether curvature selection improves neural learning and communication quality under moderate traffic.
+Fig.~\ref{fig:queue_nominal}(a)--(b) show utility and exploitability over 60 updates; Fig.~\ref{fig:queue_nominal}(c)--(d) report final goodput and backlog.
+Relative to LCMPL-F, LCMPL improves utility, exploitability, goodput, and backlog by $0.0072$, $0.0213$, $0.0039$ packet/slot, and $0.0151$ packet, respectively; every paired 95\% interval is positive and 11 or 12 of 12 seeds improve.
+After disjoint-seed step-size selection, GDA, EGM, and PPM-3 are statistically indistinguishable from LCMPL, so the resolved ablation isolates the curvature benefit without relying on untuned baselines.
 
 \subsection{Load-Adaptive Communication Robustness}
 The second study tests whether the value of selective curvature grows as endogenous queueing stress tightens the service margin.
-Fig.~\ref{fig:queue_load} varies only the arrival rate from light through moderate to near-capacity traffic while retaining the same radio model, neural architecture, seeds, and evaluation rule.
-At light load, LCMPL and LCMPL-F are statistically indistinguishable because service is sufficient and the controller seldom needs curvature.
-The fraction of LCMPL updates with $\gamma_k>10^{-10}$ rises from $8\%$ to $44\%$ and $71\%$ across the three loads.
-At moderate and near-capacity loads, the utility gains over LCMPL-F are $0.0023$ and $0.0064$, respectively, with positive paired 95\% confidence intervals.
-Near capacity, LCMPL also increases goodput by $0.0037$ packet/slot and reduces backlog and drop probability by $0.0061$ packet and $0.0034$, respectively.
-The increasing gain shows why local selection matters: suppressing rotational updates has little effect when the queue drains easily but prevents learning oscillations from accumulating into congestion under tight service margins.
+Fig.~\ref{fig:queue_load} changes only the Bernoulli arrival rate and reports paired gains over LCMPL-F, with positive values preferred.
+The utility gain grows from an unresolved $0.0003$ under light traffic to significant $0.0072$ and $0.0121$ gains under moderate and heavy traffic.
+At heavy load, goodput rises by $0.0069$ packet/slot, while backlog and drop probability fall by $0.0090$ packet and $0.0064$; nonzero-curvature updates rise from $28\%$ to $85\%$ and $94\%$ across the three loads.
+This load-dependent activation links the communication gains to selective geometric correction rather than to a permanently active extra direction.
 
 \section{Conclusion}
 LCMPL separates field and curvature step sizes in queue-aware adversarial DSA and retains curvature only when the acceptance test validates merit and physical utility.
@@ -500,35 +495,31 @@ The experiments show that this geometric stabilization improves packet delivery 
 \label{app:supplement}
 \subsection{Proof of Proposition~\ref{prop:curvature}}
 \label{app:proof-curvature}
-With $\bA=\nabla\bF$, $\langle\nabla\phi,\bG\rangle=\bF^{\mathsf T}\bA^2\bF$.
-Expanding $\bA=\bS+\bW$ and using antisymmetry of $\bS\bW+\bW\bS$ give Eq.~\eqref{eq:skew_identity} because $\bF^{\mathsf T}\bS^2\bF=\|\bS\bF\|^2$ and $\bF^{\mathsf T}\bW^2\bF=-\|\bW\bF\|^2$.
+With $\bA=\nabla\bF$, $\nabla\phi=\bA^{\mathsf T}\bF$ and $\bG=\bA\bF$, hence $\langle\nabla\phi,\bG\rangle=\bF^{\mathsf T}\bA^2\bF$. For $\bA=\bS+\bW$, antisymmetry of $\bS\bW+\bW\bS$ removes the mixed term, leaving $\|\bS\bF\|^2-\|\bW\bF\|^2$.
 \hfill$\square$
 
 \subsection{Proof of Proposition~\ref{prop:drift}}
 \label{app:proof-drift}
-The QP optimum is no larger than either comparator in Assumption~\ref{ass:model}(b); Assumption~\ref{ass:model}(c) and Eq.~\eqref{eq:geometry_certificate} transfer this dominance to the accepted Lyapunov change.
+For $i_k\in\arg\max_{i\in\{1,2\}}D_i(\bz_k)$, comparator feasibility, QP optimality, and Assumption~\ref{ass:model}(c) give $\E[\Delta V_k\mid\mathcal F_k]\leq-s\max\{D_F,D_G\}+\epsilon_k^{\rm mdl}+\epsilon_k^{\rm acc}$. Equations~\eqref{eq:geometry_certificate} and~\eqref{eq:residual} complete the bound.
 \hfill$\square$
 
 \subsection{Proof of Theorem~\ref{thm:stationarity}}
 \label{app:proof-theorem}
-Take total expectations in Proposition~\ref{prop:drift}, sum over $k$, and use $V(\bz_K)\geq0$ to obtain Eq.~\eqref{eq:rate}.
+Taking expectations, summing Proposition~\ref{prop:drift}, and telescoping yield $s\mu_{\rm geo}\sum_{k<K}\E\|\bF(\bz_k)\|^2\leq V(\bz_0)-\E V(\bz_K)+\sum_{k<K}\E\mathcal E_k(s)$; use $V(\bz_K)\geq0$ and divide by $s\mu_{\rm geo}K$.
 \hfill$\square$
 
 \subsection{Proof of Corollary~\ref{cor:rate}}
 \label{app:proof-corollary}
-Average Eq.~\eqref{eq:performance_bridge}, apply the local gap condition, and invoke Theorem~\ref{thm:stationarity}.
+For $v_\tau^\star=\max_{\pi}\min_{\nu}J_\tau(\pi,\nu)$, $|J_\tau-J|\leq\tau\log M$ and $v_\tau^\star\leq\max_\pi J_\tau(\pi,\nu_{\bpsi})$ imply Eq.~\eqref{eq:performance_bridge}. Average it, bound $\Delta_\tau$, and apply Theorem~\ref{thm:stationarity}.
 \hfill$\square$
 
 \section{Reproducibility Details}
 \label{app:reproducibility}
-Both experiments use $M=L=4$, $Q_{\max}=4$, $\rho_h=0.75$, $R_0=1$, $N_0=1$, $I_t^{\rm pri}=0$, $g_t^J=1$, $P_{\rm s}=10$, $P_{\rm J}=18$, $c_{\rm sw}=0.05$, adjacent leakage $0.50$, $\delta=0.95$, and $\tau=0.02$.
-The modes cyclically shift $g_m^{\rm base}$ geometrically from $1.9$ to $0.30$; nonadjacent leakage is $0.08$.
-The utility weights are $(\alpha_q,\alpha_d)=(0.12,0.60)$.
-Independent one-hidden-layer tanh--softmax policies observe $(g_t,q_t,a_{t-1})$, use 32 hidden units, and have 452 parameters per player.
-The nominal benchmark uses $\lambda_A=0.45$, 30 updates, and all six methods; the load stress uses $\lambda_A\in\{0.20,0.45,0.70\}$, 25 updates, and LCMPL, LCMPL-F, and PPM-3.
-Both use the 12 fixed seeds 600--611 with an initially empty queue and uniformly sampled $h_0$ and $a_{-1}$.
-Fixed-step GDA, EGM, and PPM-3 use $0.01$; Minimax PPO uses $10^{-3}$.
-LCMPL uses the box $[0,0.08]\times[0,0.12]$, weights $(\lambda_\Delta,\lambda_U)=(0.35,1.5)$, initial-value normalization, and the released directional-model and acceptance tolerances.
+The communication parameters are $M=L=4$, $Q_{\max}=4$, $\rho_h=0.75$, $R_0=N_0=g_t^J=1$, $I_t^{\rm pri}=0$, $(P_{\rm s},P_{\rm J})=(10,30)$, $c_{\rm sw}=0.05$, adjacent/nonadjacent leakage $(0.50,0.08)$, $\delta=0.95$, $\tau=0.02$, and $(\alpha_q,\alpha_d)=(0.12,0.60)$; the modes cyclically shift gains geometrically spaced from $1.9$ to $0.30$.
+Each tanh--softmax policy has 32 hidden units (452 parameters) and observes $(g_t,q_t,a_{t-1})$; constant $I_t^{\rm pri},g_t^J$ are omitted and distinct $g_t$ identifies $h_t$.
+Both studies use 60 updates, test seeds 800--811, $q_0=0$, and uniform $h_0,a_{-1}$; nominal uses $\lambda_A=0.45$ and six methods, whereas the load sweep uses $\lambda_A\in\{0.20,0.45,0.70\}$ without Minimax PPO.
+On validation seeds 100--103, GDA, EGM, and PPM-3 select $0.16$ from $\{0.01,0.04,0.08,0.16\}$; Minimax PPO uses step $10^{-3}$, clip $0.2$, and three epochs.
+LCMPL uses $[0,0.16]\times[0,0.12]$, eight backtracks, $(\lambda_\Delta,\lambda_U)=(0.35,1.5)$, initial normalization, and the released tolerances.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}

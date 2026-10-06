@@ -3,7 +3,7 @@
 The final publication figures are stored directly in this directory:
 
 - `queue_nominal_benchmark.pdf/png`: Fig. 4, the six-method moderate-load benchmark.
-- `queue_load_results.pdf/png`: Fig. 5, the light/moderate/near-capacity load sweep.
+- `queue_load_results.pdf/png`: Fig. 5, paired gains over LCMPL-F in the light/moderate/heavy load sweep.
 
 Machine-readable records are grouped by the two reported experiments:
 
