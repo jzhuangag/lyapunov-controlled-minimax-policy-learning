@@ -8,7 +8,15 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
-plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})
+plt.rcParams.update(
+    {
+        "font.family": "Times New Roman",
+        "font.serif": ["Times New Roman"],
+        "mathtext.fontset": "stix",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+    }
+)
 
 
 BLUE = "#315FA8"
@@ -89,8 +97,8 @@ def draw(output: Path) -> None:
     arrow(axis, (0.70, 0.59), (0.74, 0.39), RED, "$b_t$")
     arrow(axis, (0.48, 0.73), (0.67, 0.34), BLUE)
 
-    box(axis, (0.85, 0.14), 0.14, 0.27, "Queue update\n$q_{t+1}=f(q_t,S_t,A_t)$", ORANGE, "#FFF7EC", 5.0, "bold")
-    arrow(axis, (0.83, 0.275), (0.86, 0.275), ORANGE, "$S_t$")
+    box(axis, (0.845, 0.14), 0.145, 0.27, "Queue update\n$q_{t+1}=f(q_t,S_t,A_t)$", ORANGE, "#FFF7EC", 4.6, "bold")
+    arrow(axis, (0.83, 0.275), (0.85, 0.275), ORANGE)
     arrow(axis, (0.92, 0.14), (0.275, 0.15), ORANGE, "action-dependent next state", (0.0, -0.045), "->")
 
     for suffix in ("pdf", "png"):

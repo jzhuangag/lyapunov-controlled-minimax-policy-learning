@@ -8,7 +8,15 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
 
-plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})
+plt.rcParams.update(
+    {
+        "font.family": "Times New Roman",
+        "font.serif": ["Times New Roman"],
+        "mathtext.fontset": "stix",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+    }
+)
 
 
 BLUE = "#315FA8"

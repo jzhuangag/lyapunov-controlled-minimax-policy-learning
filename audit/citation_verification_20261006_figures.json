@@ -1,0 +1,37 @@
+{
+  "manuscripts": [
+    "ICC2027_submit.tex",
+    "ICC2027_camera_ready.tex"
+  ],
+  "verified_at": "2026-10-06",
+  "revision_scope": "Experimental-figure typography, layout, and Section V narrative; no citation or bibliography entry was added, removed, or edited.",
+  "result": "pass",
+  "active_citation_count": 16,
+  "bibliography_entry_count": 16,
+  "missing_keys": [],
+  "orphan_entries": [],
+  "unresolved_material_conflicts": 0,
+  "fresh_resolver_checks": {
+    "crossref_doi": {
+      "status": "pass",
+      "checked_count": 10,
+      "note": "Crossref returned matching titles and publication years for all ten DOI-bearing records."
+    },
+    "official_proceedings": {
+      "status": "pass",
+      "records": [
+        "Balduzzi2018Mechanics: PMLR 80:354--363",
+        "Mokhtari2020UnifiedEG: PMLR 108:1497--1507",
+        "Hsieh2020DSEG: NeurIPS 33:16223--16234",
+        "Antonakopoulos2021AdaProx: OpenReview/ICLR 2021"
+      ]
+    },
+    "archive_and_index": {
+      "status": "pass",
+      "records": [
+        "Schulman2017PPO: arXiv:1707.06347",
+        "Korpelevich1976Extragradient: CiNii/Matecon 12:747--756"
+      ]
+    }
+  }
+}

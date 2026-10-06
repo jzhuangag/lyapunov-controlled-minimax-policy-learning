@@ -16,7 +16,15 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})
+plt.rcParams.update(
+    {
+        "font.family": "Times New Roman",
+        "font.serif": ["Times New Roman"],
+        "mathtext.fontset": "stix",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+    }
+)
 
 
 METHODS = ("QP+G", "noG", "Minimax-PPO", "GDA", "EGM", "PPM-3")
@@ -51,6 +59,14 @@ MARKERS = {
     "GDA": "^",
     "EGM": "v",
     "PPM-3": "D",
+}
+TICK_LABELS = {
+    "QP+G": "LCMPL",
+    "noG": "LCMPL-F",
+    "Minimax-PPO": "M-PPO",
+    "GDA": "GDA",
+    "EGM": "EGM",
+    "PPM-3": "PPM-3",
 }
 FINAL_METRICS = (
     ("robust_rate", 1.0),
@@ -90,9 +106,10 @@ def plot_curve(axis: plt.Axes, data: pd.DataFrame, metric: str, title: str, ylab
         axis.fill_between(steps, mean - sem, mean + sem, color=COLORS[method], alpha=0.08, linewidth=0)
     axis.set_xlabel("joint updates", fontsize=7.3)
     axis.set_ylabel(ylabel, fontsize=7.3)
-    axis.set_title(title, fontsize=8.0)
+    axis.set_title(title, fontsize=7.6, y=-0.35)
     axis.tick_params(labelsize=6.8)
     axis.grid(True, alpha=0.25, linewidth=0.45)
+    axis.set_box_aspect(1)
 
 
 def plot_final(axis: plt.Axes, final: pd.DataFrame, metric: str, title: str, ylabel: str) -> None:
@@ -103,22 +120,25 @@ def plot_final(axis: plt.Axes, final: pd.DataFrame, metric: str, title: str, yla
         mean, half = mean_ci(values)
         means.append(mean)
         errors.append(half)
-    x = np.arange(len(METHODS))
-    axis.bar(
-        x,
-        means,
-        yerr=errors,
-        color=[COLORS[method] for method in METHODS],
-        width=0.72,
-        capsize=2.0,
-        linewidth=0,
-        alpha=0.88,
-    )
-    axis.set_xticks(x, [LABELS[method] for method in METHODS], rotation=25, ha="right")
-    axis.set_ylabel(ylabel, fontsize=7.3)
-    axis.set_title(title, fontsize=8.0)
-    axis.tick_params(labelsize=6.5)
-    axis.grid(axis="y", alpha=0.25, linewidth=0.45)
+    y = np.arange(len(METHODS))
+    for index, method in enumerate(METHODS):
+        axis.errorbar(
+            means[index],
+            y[index],
+            xerr=errors[index],
+            color=COLORS[method],
+            marker=MARKERS[method],
+            markersize=3.5,
+            capsize=2.0,
+            linewidth=1.0,
+        )
+    axis.set_yticks(y, [TICK_LABELS[method] for method in METHODS])
+    axis.invert_yaxis()
+    axis.set_xlabel(ylabel, fontsize=7.3)
+    axis.set_title(title, fontsize=7.6, y=-0.35)
+    axis.tick_params(labelsize=6.0)
+    axis.grid(axis="x", alpha=0.25, linewidth=0.45)
+    axis.set_box_aspect(1)
 
 
 def paired_record(final: pd.DataFrame, comparator: str, metric: str, direction: float) -> Dict[str, object]:
@@ -144,22 +164,22 @@ def plot(input_csv: Path, output_dir: Path) -> None:
     data = pd.read_csv(input_csv)
     final_step = int(data["step"].max())
     final = data[data["step"] == final_step].copy()
-    fig, axes = plt.subplots(2, 2, figsize=(7.16, 3.45), constrained_layout=True)
-    plot_curve(axes[0, 0], data, "robust_rate", "(a) Worst-case queue utility", "utility")
-    plot_curve(axes[0, 1], data, "hard_exploitability", "(b) Policy exploitability", "exploitability")
-    plot_final(axes[1, 0], final, "br_goodput", "(c) Delivered goodput", "packet/slot")
-    plot_final(axes[1, 1], final, "br_backlog", "(d) Queue backlog", "packet")
-    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig, axes = plt.subplots(1, 4, figsize=(7.16, 2.05), constrained_layout=True)
+    plot_curve(axes[0], data, "robust_rate", "(a) Worst-case queue utility", "utility")
+    plot_curve(axes[1], data, "hard_exploitability", "(b) Policy exploitability", "exploitability")
+    plot_final(axes[2], final, "br_goodput", "(c) Delivered goodput", "packet/slot")
+    plot_final(axes[3], final, "br_backlog", "(d) Queue backlog", "packet")
+    handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(
         handles,
         labels,
         loc="upper center",
         ncol=6,
         frameon=False,
-        bbox_to_anchor=(0.5, 1.035),
-        fontsize=7.2,
-        handlelength=2.0,
-        columnspacing=1.0,
+        bbox_to_anchor=(0.5, 1.08),
+        fontsize=6.8,
+        handlelength=1.8,
+        columnspacing=0.8,
     )
     for suffix in ("pdf", "png"):
         fig.savefig(output_dir / f"queue_nominal_benchmark.{suffix}", dpi=350, bbox_inches="tight")

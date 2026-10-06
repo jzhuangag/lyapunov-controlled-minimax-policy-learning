@@ -397,7 +397,7 @@ This single term separates the geometric benefit of the bi-direction update from
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\widefigwidth]{results/queue_nominal_benchmark.pdf}
-\caption{Queue-aware nominal benchmark at moderate load over 12 seeds. Curves show means with one standard error; bars show final means with 95\% confidence intervals.}
+\caption{Queue-aware nominal benchmark at moderate load over 12 seeds. Curves show means with one standard error; points show final means with 95\% confidence intervals.}
 \label{fig:queue_nominal}
 \end{figure*}
 
@@ -467,19 +467,23 @@ The last term is the entropy-regularization error.
 
 \section{Communication Performance Evaluation}
 We evaluate worst-case discounted utility, exploitability, delivered goodput, backlog, and dropping in the action-dependent queueing game.
-Matched comparisons share the environment, neural policies, initialization, seeds, entropy coefficient, and simultaneous start.
+Both agents use independent one-hidden-layer tanh--softmax neural policies, so Fig.~\ref{fig:queue_nominal}(a)--(b) directly evaluate neural minimax-learning convergence.
+Matched comparisons share the environment, policy architecture, initialization, seeds, entropy coefficient, and simultaneous start.
 The nominal benchmark compares GDA~\cite{Mokhtari2020UnifiedEG}, the extragradient method (EGM)~\cite{Korpelevich1976Extragradient}, PPM-3 as three inner fixed-point iterations approximating the proximal point method (PPM)~\cite{Rockafellar1976PPM}, clipped minimax proximal policy optimization (Minimax PPO)~\cite{Schulman2017PPO}, LCMPL-F with $\gamma_k=0$, and LCMPL.
 Appendix~\ref{app:reproducibility} reports the complete protocol.
 
-\subsection{Nominal Queue-Aware Learning}
-At moderate load, Fig.~\ref{fig:queue_nominal}(a) and Fig.~\ref{fig:queue_nominal}(b) show that LCMPL simultaneously raises worst-case utility and reduces exploitability.
+\subsection{Neural Learning Dynamics and Policy Quality}
+The nominal study asks whether curvature selection improves both the training dynamics and the communication quality of the learned neural policies under moderate traffic.
+Fig.~\ref{fig:queue_nominal}(a)--(b) show the convergence of worst-case utility and exploitability over 30 joint neural-policy updates, while Fig.~\ref{fig:queue_nominal}(c)--(d) report final goodput and backlog.
+LCMPL simultaneously raises worst-case utility and reduces exploitability.
 Relative to LCMPL-F, its paired mean utility gain is $0.0024$ (95\% confidence interval $[0.0001,0.0047]$), while exploitability decreases by $0.0039$ ($[0.0007,0.0071]$).
 The same accepted policies increase delivered goodput by $0.0012$ packet/slot ($[0.0001,0.0024]$) and reduce backlog by $0.0066$ packet ($[0.0006,0.0126]$).
 Against GDA, EGM, and PPM-3, LCMPL gains about $0.0431$ in utility and $0.0198$ packet/slot in goodput while reducing backlog by $0.1138$ packet; every paired 95\% interval excludes zero.
 Fig.~\ref{fig:queue_nominal}(c) and Fig.~\ref{fig:queue_nominal}(d) therefore connect saddle stabilization to packet delivery rather than only to an optimization residual.
 
-\subsection{Traffic-Load Stress}
-Fig.~\ref{fig:queue_load} varies the arrival rate from light through moderate to near-capacity traffic.
+\subsection{Load-Adaptive Communication Robustness}
+The second study tests whether the value of selective curvature grows as endogenous queueing stress tightens the service margin.
+Fig.~\ref{fig:queue_load} varies only the arrival rate from light through moderate to near-capacity traffic while retaining the same radio model, neural architecture, seeds, and evaluation rule.
 At light load, LCMPL and LCMPL-F are statistically indistinguishable because service is sufficient and the controller seldom needs curvature.
 The fraction of LCMPL updates with $\gamma_k>10^{-10}$ rises from $8\%$ to $44\%$ and $71\%$ across the three loads.
 At moderate and near-capacity loads, the utility gains over LCMPL-F are $0.0023$ and $0.0064$, respectively, with positive paired 95\% confidence intervals.

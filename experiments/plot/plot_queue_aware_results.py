@@ -12,7 +12,15 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})
+plt.rcParams.update(
+    {
+        "font.family": "Times New Roman",
+        "font.serif": ["Times New Roman"],
+        "mathtext.fontset": "stix",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+    }
+)
 
 
 METHODS = ("QP+G", "noG", "PPM-3")
@@ -95,6 +103,7 @@ def plot(input_csv: Path, output_dir: Path) -> None:
         axis.grid(True, alpha=0.25, linewidth=0.5)
         axis.set_ylabel(ylabel, fontsize=7.3)
         axis.set_title(title, fontsize=7.8, y=-0.36)
+        axis.set_box_aspect(1)
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(
         handles,
