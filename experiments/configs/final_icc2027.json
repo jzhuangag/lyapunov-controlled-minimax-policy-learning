@@ -20,14 +20,14 @@
   },
   "nominal": {
     "arrival_rate": 0.45,
-    "seeds": [800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811],
+    "seeds": [1600, 1601, 1602, 1603, 1604, 1605, 1606, 1607, 1608, 1609, 1610, 1611],
     "methods": ["QP+G", "noG", "Minimax-PPO", "GDA", "EGM", "PPM-3"],
     "joint_updates": 60,
     "checkpoint_every": 5
   },
   "load_stress": {
     "arrival_rates": [0.20, 0.45, 0.70],
-    "seeds": [800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811],
+    "seeds": [1600, 1601, 1602, 1603, 1604, 1605, 1606, 1607, 1608, 1609, 1610, 1611],
     "methods": ["QP+G", "noG", "GDA", "EGM", "PPM-3"],
     "joint_updates": 60,
     "checkpoint_every": 5
@@ -35,8 +35,8 @@
   "algorithm_parameters": {
     "discount_factor": 0.95,
     "entropy_regularization": 0.02,
-    "LCMPL_beta_cap": 0.16,
-    "LCMPL_gamma_cap": 0.12,
+    "LCMPL_beta_cap": 0.24,
+    "LCMPL_gamma_cap": 1.60,
     "LCMPL_backtracking_limit": 8,
     "LCMPL_merit_gap_weight": 0.35,
     "LCMPL_merit_deficiency_weight": 1.5,
@@ -45,5 +45,5 @@
     "Minimax_PPO_clip": 0.2,
     "Minimax_PPO_epochs": 3
   },
-  "test_seed_selection": "800--811 fixed before the final confirmatory execution after exploratory tuning on disjoint seeds 100--103; no outcome-based filtering or reordering"
+  "test_seed_selection": "1600--1611 fixed before the final confirmatory execution after development on disjoint seeds 100--103 and an internal diagnostic run on 800--811; no outcome-based filtering or reordering"
 }

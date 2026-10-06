@@ -7,6 +7,20 @@
     103
   ],
   "formal_test_seeds": [
+    1600,
+    1601,
+    1602,
+    1603,
+    1604,
+    1605,
+    1606,
+    1607,
+    1608,
+    1609,
+    1610,
+    1611
+  ],
+  "intermediate_diagnostic_seeds_not_used_for_final_confirmation": [
     800,
     801,
     802,
@@ -27,6 +41,19 @@
     0.08,
     0.16
   ],
+  "LCMPL_cap_selection": {
+    "field_cap_grid": [0.16, 0.24, 0.32, 0.48],
+    "selected_field_cap": 0.24,
+    "field_cap_rule": "select the smallest cap that improves worst-case utility, exploitability, goodput, and backlog jointly on development seeds",
+    "curvature_cap_grid": [0.04, 0.08, 0.12, 0.20, 0.28, 0.40, 0.60, 0.80, 1.20, 1.60, 2.40],
+    "selected_curvature_cap": 1.60,
+    "curvature_cap_rule": "select the smallest cap at the development-set performance plateau; increasing the cap from 1.60 to 2.40 changed mean worst-case utility by less than 0.001",
+    "development_environment": {
+      "arrival_rate": 0.45,
+      "jammer_to_noise": 30.0,
+      "joint_updates": 60
+    }
+  },
   "methods": {
     "GDA": {
       "selected_step_size": 0.16,

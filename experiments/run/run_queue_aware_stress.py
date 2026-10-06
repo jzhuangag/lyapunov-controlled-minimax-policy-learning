@@ -30,6 +30,7 @@ from run_neural_scale_game import (
     DISCOUNT,
     ENTROPY_TAU,
     FIXED_LEARNING_RATE,
+    GAMMA_CAP,
     MERIT_DEFICIENCY_WEIGHT,
     MERIT_GAP_WEIGHT,
     PPO_CLIP,
@@ -51,7 +52,7 @@ MODES = 4
 QUEUE_CAPACITY = 4
 HIDDEN_WIDTH = 32
 ARRIVAL_RATES = (0.20, 0.45, 0.70)
-SEEDS = tuple(range(800, 812))
+SEEDS = tuple(range(1600, 1612))
 STEPS = 60
 METHODS = ("QP+G", "noG", "GDA", "EGM", "PPM-3")
 CHECKPOINT_EVERY = 5
@@ -412,7 +413,7 @@ def manifest(seeds: Sequence[int], steps: int, arrival_rates: Sequence[float]) -
             "discount_factor": DISCOUNT,
             "entropy_regularization": ENTROPY_TAU,
             "LCMPL_beta_cap": BETA_CAP,
-            "LCMPL_gamma_cap": 0.12,
+            "LCMPL_gamma_cap": GAMMA_CAP,
             "LCMPL_backtracking_limit": BACKTRACKS,
             "LCMPL_merit_gap_weight": MERIT_GAP_WEIGHT,
             "LCMPL_merit_deficiency_weight": MERIT_DEFICIENCY_WEIGHT,

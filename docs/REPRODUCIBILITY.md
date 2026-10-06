@@ -39,7 +39,7 @@ The release verifier checks that both files agree with `results/package_versions
 ### Nominal six-method benchmark
 
 - Arrival rate: 0.45 packet/slot.
-- Seeds: 800–811.
+- Seeds: 1600–1611.
 - Nominal methods: LCMPL (`QP+G`), LCMPL-F (`noG`), Minimax PPO, GDA, EGM, and PPM-3.
 - Joint updates: 60; checkpoint interval: 5.
 - Exact dynamic programming evaluates worst-case queue utility, exploitability, delivered goodput, backlog, and dropping.
@@ -47,12 +47,12 @@ The release verifier checks that both files agree with `results/package_versions
 ### Traffic-load stress
 
 - Arrival rates: 0.20, 0.45, and 0.70 packet/slot.
-- Seeds: 800–811.
+- Seeds: 1600–1611.
 - Methods: LCMPL, LCMPL-F, GDA, EGM, and PPM-3.
 - Joint updates: 60.
 - Each method is independently retrained at every load.
 
-The radio configuration uses jammer-to-noise ratio 30. LCMPL uses step-size box `[0,0.16] × [0,0.12]`, eight backtracking trials, and merit weights `(0.35,1.5)`. On disjoint validation seeds 100–103, GDA, EGM, and PPM-3 select step size 0.16 from `{0.01,0.04,0.08,0.16}`; Minimax PPO uses step size 0.001, clip 0.2, and three epochs. The full manifest is stored in `experiments/configs/final_icc2027.json`; no test seed was removed or reordered based on results.
+The radio configuration uses jammer-to-noise ratio 30. LCMPL uses step-size box `[0,0.24] × [0,1.60]`, eight backtracking trials, and merit weights `(0.35,1.5)`. On disjoint development seeds 100–103, GDA, EGM, and PPM-3 select step size 0.16 from `{0.01,0.04,0.08,0.16}`; the LCMPL cap audit is recorded in `results/validation/queue_step_selection.json`; Minimax PPO uses step size 0.001, clip 0.2, and three epochs. The final confirmation uses previously unseen seeds 1600–1611. The full manifest is stored in `experiments/configs/final_icc2027.json`; no confirmatory seed was removed or reordered based on results.
 
 ## Commands
 

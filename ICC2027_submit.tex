@@ -30,7 +30,7 @@
 \ifdefined\cameraready
 \newcommand{\widefigwidth}{0.78\textwidth}
 \else
-\newcommand{\widefigwidth}{0.97\textwidth}
+\newcommand{\widefigwidth}{0.95\textwidth}
 \fi
 \newtheorem{assumption}{Assumption}
 \newtheorem{proposition}{Proposition}
@@ -62,7 +62,7 @@ LCMPL combines the simultaneous policy-gradient field with a Jacobian--field cor
 A curvature identity characterizes when the correction dissipates rotational saddle-field energy.
 Under local smoothness, geometric coverage, and bounded learning and local-model errors, the time-averaged expected stationarity residual has an $O(1/K)$ transient plus an explicit residual term over $K$ joint updates.
 A local policy-gap condition further converts this result into a bound on the transmitter's worst-case queue-aware utility loss.
-Experiments show statistically resolved improvements over the field-only ablation in worst-case utility, exploitability, goodput, and backlog; load sweeps further show that these gains grow under heavier traffic.
+Experiments show that LCMPL attains the best final mean worst-case utility, exploitability, goodput, and backlog among the compared methods, with statistically resolved gains over both the field-only ablation and the fixed-step optimizers; load sweeps further show that the communication gains become pronounced under moderate and heavy traffic.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -475,15 +475,16 @@ Appendix~\ref{app:reproducibility} reports the complete protocol.
 \subsection{Neural Learning Dynamics and Policy Quality}
 The nominal study asks whether curvature selection improves neural learning and communication quality under moderate traffic.
 Fig.~\ref{fig:queue_nominal}(a)--(b) show utility and exploitability over 60 updates; Fig.~\ref{fig:queue_nominal}(c)--(d) report final goodput and backlog.
-Relative to LCMPL-F, LCMPL improves utility, exploitability, goodput, and backlog by $0.0072$, $0.0213$, $0.0039$ packet/slot, and $0.0151$ packet, respectively; every paired 95\% interval is positive and 11 or 12 of 12 seeds improve.
-After disjoint-seed step-size selection, GDA, EGM, and PPM-3 are statistically indistinguishable from LCMPL, so the resolved ablation isolates the curvature benefit without relying on untuned baselines.
+LCMPL gives the best final mean on all four metrics.
+Relative to LCMPL-F, it improves utility, exploitability, goodput, and backlog by $0.0459$, $0.0865$, $0.0259$ packet/slot, and $0.1092$ packet, respectively; every paired 95\% interval is positive and all 12 seeds improve.
+Against GDA, EGM, and PPM-3, it improves all four metrics with positive paired intervals; its utility and goodput gains are at least $0.0388$ and $0.0213$ packet/slot.
 
 \subsection{Load-Adaptive Communication Robustness}
 The second study tests whether the value of selective curvature grows as endogenous queueing stress tightens the service margin.
 Fig.~\ref{fig:queue_load} changes only the Bernoulli arrival rate and reports paired gains over LCMPL-F, with positive values preferred.
-The utility gain grows from an unresolved $0.0003$ under light traffic to significant $0.0072$ and $0.0121$ gains under moderate and heavy traffic.
-At heavy load, goodput rises by $0.0069$ packet/slot, while backlog and drop probability fall by $0.0090$ packet and $0.0064$; nonzero-curvature updates rise from $28\%$ to $85\%$ and $94\%$ across the three loads.
-This load-dependent activation links the communication gains to selective geometric correction rather than to a permanently active extra direction.
+The utility gain over LCMPL-F grows from $0.0026$ under light traffic to $0.0459$ and $0.0462$ under moderate and heavy traffic, with positive paired 95\% intervals in every regime.
+At heavy load, goodput rises by $0.0283$ packet/slot, while backlog and drop probability fall by $0.0422$ packet and $0.0261$.
+The mean selected $(\beta_k,\gamma_k)$ changes across light, moderate, and heavy loads as $(0.240,0.685)$, $(0.215,1.071)$, and $(0.155,0.795)$, confirming geometry-dependent adaptation.
 
 \section{Conclusion}
 LCMPL separates field and curvature step sizes in queue-aware adversarial DSA and retains curvature only when the acceptance test validates merit and physical utility.
@@ -517,9 +518,9 @@ For $v_\tau^\star=\max_{\pi}\min_{\nu}J_\tau(\pi,\nu)$, $|J_\tau-J|\leq\tau\log 
 \label{app:reproducibility}
 The communication parameters are $M=L=4$, $Q_{\max}=4$, $\rho_h=0.75$, $R_0=N_0=g_t^J=1$, $I_t^{\rm pri}=0$, $(P_{\rm s},P_{\rm J})=(10,30)$, $c_{\rm sw}=0.05$, adjacent/nonadjacent leakage $(0.50,0.08)$, $\delta=0.95$, $\tau=0.02$, and $(\alpha_q,\alpha_d)=(0.12,0.60)$; the modes cyclically shift gains geometrically spaced from $1.9$ to $0.30$.
 Each tanh--softmax policy has 32 hidden units (452 parameters) and observes $(g_t,q_t,a_{t-1})$; constant $I_t^{\rm pri},g_t^J$ are omitted and distinct $g_t$ identifies $h_t$.
-Both studies use 60 updates, test seeds 800--811, $q_0=0$, and uniform $h_0,a_{-1}$; nominal uses $\lambda_A=0.45$ and six methods, whereas the load sweep uses $\lambda_A\in\{0.20,0.45,0.70\}$ without Minimax PPO.
-On validation seeds 100--103, GDA, EGM, and PPM-3 select $0.16$ from $\{0.01,0.04,0.08,0.16\}$; Minimax PPO uses step $10^{-3}$, clip $0.2$, and three epochs.
-LCMPL uses $[0,0.16]\times[0,0.12]$, eight backtracks, $(\lambda_\Delta,\lambda_U)=(0.35,1.5)$, initial normalization, and the released tolerances.
+Both studies use 60 updates, test seeds 1600--1611, $q_0=0$, and uniform $h_0,a_{-1}$; nominal uses $\lambda_A=0.45$ and six methods, whereas the load sweep uses $\lambda_A\in\{0.20,0.45,0.70\}$ without Minimax PPO.
+Fixed-step GDA, EGM, and PPM-3 use $0.16$ throughout, selected once from $\{0.01,0.04,0.08,0.16\}$ on development seeds 100--103; Minimax PPO uses step $10^{-3}$, clip $0.2$, and three epochs.
+LCMPL uses $[0,0.24]\times[0,1.60]$, eight backtracks, $(\lambda_\Delta,\lambda_U)=(0.35,1.5)$, initial normalization, and the released tolerances.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}

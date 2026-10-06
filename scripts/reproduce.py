@@ -21,7 +21,7 @@ PLOT = EXPERIMENTS / "plot"
 TESTS = EXPERIMENTS / "tests"
 OUTPUTS = ROOT / "outputs"
 RESULTS = ROOT / "results"
-QUEUE_SEEDS = tuple(range(800, 812))
+QUEUE_SEEDS = tuple(range(1600, 1612))
 
 
 def timestamp() -> str:
@@ -132,7 +132,7 @@ def smoke(requested: Optional[Path]) -> Path:
     output = new_output("smoke", requested)
     records: List[Dict[str, object]] = []
     run(python(TESTS / "test_queue_transition_model.py"), records)
-    run(python(RUN / "run_queue_aware_stress.py", "--smoke", "--output", output / "queue_aware", "--seeds", 800), records)
+    run(python(RUN / "run_queue_aware_stress.py", "--smoke", "--output", output / "queue_aware", "--seeds", 1600), records)
     write_manifest(output, "smoke", records)
     return output
 

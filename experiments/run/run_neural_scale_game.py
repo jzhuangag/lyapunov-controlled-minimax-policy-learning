@@ -30,7 +30,8 @@ DISCOUNT = 0.95
 ENTROPY_TAU = 0.02
 MERIT_GAP_WEIGHT = 0.35
 MERIT_DEFICIENCY_WEIGHT = 1.50
-BETA_CAP = 0.16
+BETA_CAP = 0.24
+GAMMA_CAP = 1.60
 BACKTRACKS = 8
 LR_GRID = (0.01, 0.03, 0.06)
 PPO_CLIP = 0.20
@@ -490,7 +491,7 @@ def local_coefficients(
             "predicted_model_change": predicted,
         }
     gamma_probe = float(np.clip(beta_probe * f_norm / g_norm, 2.0e-4, 0.025))
-    gamma_upper = float(np.clip(BETA_CAP * f_norm / g_norm, 5.0e-4, 0.12))
+    gamma_upper = float(np.clip(BETA_CAP * f_norm / g_norm, 5.0e-4, GAMMA_CAP))
     g_plus = merit(z + gamma_probe * curvature, game, scales)
     g_minus = merit(z - gamma_probe * curvature, game, scales)
     linear_g = (g_plus - g_minus) / (2.0 * gamma_probe)

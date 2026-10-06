@@ -19,7 +19,7 @@ from run_queue_aware_stress import QueueGameSpec, manifest as common_manifest, r
 
 
 MODEL_VERSION = "queue-aware-dsa-nominal-v2"
-SEEDS = tuple(range(800, 812))
+SEEDS = tuple(range(1600, 1612))
 STEPS = 60
 ARRIVAL_RATE = 0.45
 METHODS = ("QP+G", "noG", "Minimax-PPO", "GDA", "EGM", "PPM-3")
